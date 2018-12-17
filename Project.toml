@@ -3,6 +3,24 @@ uuid = "e5d7e63e-020d-11e9-1e2d-c1b17e981caa"
 authors = ["Twan Koolen <koolen.twan@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+AtlasRobot = "436ed74b-f7b6-57fe-bd82-efdbd6c0ab0c"
+Blink = "ad839575-38b3-5650-b840-f874b8c74a25"
+Interact = "c601a237-2ae4-5e1e-952c-7a85b0c7eef1"
+InteractBase = "d3863d7c-f0c8-5437-a7b4-3ae773c01009"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
+MeshCat = "283c5d60-a78f-5afe-a0af-af636b173e11"
+MeshCatMechanisms = "6ad125db-dd91-5488-b820-c1df6aab299d"
+OSQP = "ab2f91bb-94b4-55e3-9ba0-7f65df51de79"
+Observables = "510215fc-4207-5dde-b226-833fc4488ee2"
+QPControl = "ab1c7e18-f4ed-52ae-aa6d-a660f8b86f43"
+RigidBodyDynamics = "366cf18f-59d5-5db9-a4de-86a9f6786172"
+RigidBodySim = "e61f16d8-a6b7-5689-8d03-627c2b27ebce"
+Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
+
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
