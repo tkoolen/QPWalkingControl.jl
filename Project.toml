@@ -1,0 +1,10 @@
+name = "PushRecovery"
+uuid = "e5d7e63e-020d-11e9-1e2d-c1b17e981caa"
+authors = ["Twan Koolen <koolen.twan@gmail.com>"]
+version = "0.1.0"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
