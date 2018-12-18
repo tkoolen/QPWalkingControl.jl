@@ -22,7 +22,7 @@ import WebIO
 import MathOptInterface
 import RigidBodySim
 
-using InteractBase: button, slider, hbox, vbox, Widget
+using InteractBase: button, slider, vbox, pad, px, Widget, style, container
 using Observables: Observable, observe
 using MeshCatMechanisms: MechanismVisualizer
 
