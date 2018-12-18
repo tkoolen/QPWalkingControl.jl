@@ -456,9 +456,9 @@ version = "0.10.3"
 
 [[Parametron]]
 deps = ["DocStringExtensions", "FunctionWrappers", "LinearAlgebra", "MacroTools", "MathOptInterface", "Random", "Test"]
-git-tree-sha1 = "2b68c441a32ac08ca13f785faec04d21e8ae4837"
+path = "/home/twan/.julia/dev/Parametron"
 uuid = "41fac6d6-0ffa-5bcc-b863-17dd4947be41"
-version = "0.6.0"
+version = "0.6.0+"
 
 [[Pidfile]]
 deps = ["FileWatching", "Test"]

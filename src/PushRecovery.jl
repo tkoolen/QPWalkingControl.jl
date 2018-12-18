@@ -14,6 +14,7 @@ using RigidBodyDynamics.PDControl
 using StaticArrays
 using Rotations
 using QPControl
+using Parametron
 
 import Observables
 import InteractBase
@@ -29,6 +30,7 @@ using MeshCatMechanisms: MechanismVisualizer
 const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
+include("convexhull.jl")
 include("icpcontrol.jl")
 include("controller.jl")
 include("pushapplier.jl")

@@ -7,6 +7,8 @@ end
 
 function (controller::ICPController{T})(c::Point3D, ċ::FreeVector3D, z_des::Number;
         zd_des=zero(T), zdd_des=zero(T), ξ_des=zero(c), ξd_des=zero(ċ)) where T
+    # Equation (27) in "Design of a momentum-based control framework and application to the humanoid robot atlas"
+    # minus the integral term.
     kxy = controller.kxy
     zgains = controller.zgains
     m = controller.m
