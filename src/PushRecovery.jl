@@ -29,6 +29,7 @@ using MeshCatMechanisms: MechanismVisualizer
 const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
+include("icpcontrol.jl")
 include("controller.jl")
 include("pushapplier.jl")
 include("visualization.jl")
