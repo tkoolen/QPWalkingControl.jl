@@ -44,12 +44,12 @@ function PushRecoveryController(
     addtask!(lowlevel, linmomtask, linear_momentum_weight)
 
     pelvistask = AngularAccelerationTask(mechanism, path(mechanism, world, pelvis))
-    addtask!(lowlevel, pelvistask)
+    addtask!(lowlevel, pelvistask, 10.0)
 
     revolutejoints = filter(j -> joint_type(j) isa Revolute, tree_joints(mechanism))
     positioncontroljoints = setdiff(revolutejoints, vcat((collect(task.path) for task in values(foottasks))...))
     jointtasks = Dict(JointID(j) => JointAccelerationTask(j) for j in positioncontroljoints)
-    addtask!.(Ref(lowlevel), collect(values(jointtasks)))
+    addtask!.(Ref(lowlevel), collect(values(jointtasks)), 1.0)
 
     num_contacts = sum(length, values(lowlevel.contacts))
     convexhullproblem = ConvexHullProblem{2, num_contacts, Float64}(convexhulloptimizer)
@@ -73,7 +73,7 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     h = momentum(state)
     ċ = FreeVector3D(h.frame, linear(h) / m)
     zdesired = controller.comref.v[3]
-    l̇desired = controller.icpcontroller(c, ċ, zdesired; ξ_des=controller.comref)
+    l̇desired = controller.icpcontroller(c, ċ, zdesired, convexhullproblem; ξ_des=controller.comref)
     centroidal = centroidal_frame(controller.lowlevel)
     world_to_centroidal = Transform3D(c.frame, centroidal, -c.v)
     l̇desired = transform(l̇desired, world_to_centroidal)
@@ -107,7 +107,7 @@ function update_support_polygon_problem!(convexhullproblem::ConvexHullProblem, s
         to_world = transform_to_root(state, body)
         for contactpoint in contactpoints
             position = transform(contactpoint.position::Point3D{SVector{3, Float64}}, to_world)
-            @inbounds set_vertex!(convexhullproblem, i, SVector(position.v[1], position.v[2]))
+            @inbounds set_vertex!(convexhullproblem, i, horizontal_projection(position.v))
             i += 1
         end
     end

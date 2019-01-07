@@ -14,7 +14,7 @@ using RigidBodyDynamics.PDControl
 using StaticArrays
 using Rotations
 using QPControl
-using Parametron
+# using Parametron
 
 import Observables
 import InteractBase
@@ -31,9 +31,10 @@ const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
 include("convexhull.jl")
-include("icpcontrol.jl")
+include("util.jl")
 
 using .ConvexHull
+include("icpcontrol.jl")
 include("controller.jl")
 
 include("pushapplier.jl")

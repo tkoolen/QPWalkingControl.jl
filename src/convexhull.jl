@@ -5,6 +5,7 @@ export
     set_point!,
     set_vertex!,
     set_vertices!,
+    set_shrink_factor!,
     solve!,
     is_point_inside,
     distance_to_closest_point,
@@ -24,6 +25,7 @@ struct ConvexHullProblem{N, M, T, O<:MOI.AbstractOptimizer, L}
     vertices::MMatrix{N, M, T, L}
     weights::SVector{M, Variable}
     closest::SVector{N, Variable}
+    shrinkfactor::Base.RefValue{T}
 
     function ConvexHullProblem{N, M, T}(optimizer::O) where {N, M, T, O<:MOI.AbstractOptimizer}
         model = Model(optimizer)
@@ -31,17 +33,18 @@ struct ConvexHullProblem{N, M, T, O<:MOI.AbstractOptimizer, L}
 
         point = Parameter(model, val=zero(MVector{N, T}))
         vertices = Parameter(model, val=zero(MMatrix{N, M, T}))
+        shrinkfactor = Parameter(model, val=zero(T))
         weights = SVector(ntuple(i -> Variable(model), M))
         closest = SVector(ntuple(i -> Variable(model), N))
 
         @constraint model vertices * weights == closest
         @constraint model weights >= zeros(M)
-        @constraint model weights <= ones(M)
+        @constraint model weights <= (1.0 - shrinkfactor) * ones(M)
         @constraint model sum(weights) == 1
         difference = @expression point - closest
         @objective model Minimize difference ⋅ difference
 
-        new{N, M, T, O, L}(model, point.val[], vertices.val[], weights, closest)
+        new{N, M, T, O, L}(model, point.val[], vertices.val[], weights, closest, shrinkfactor.val)
     end
 end
 
@@ -59,6 +62,8 @@ function set_vertices!(problem::ConvexHullProblem{N, M, T}, vertices::AbstractVe
         set_vertex!(problem, i, vertices[i])
     end
 end
+
+set_shrink_factor!(problem::ConvexHullProblem, shrinkfactor::Number) = problem.shrinkfactor[] = shrinkfactor
 
 solve!(problem::ConvexHullProblem) = Parametron.solve!(problem.model)
 
