@@ -32,7 +32,10 @@ const RBD = RigidBodyDynamics
 
 include("convexhull.jl")
 include("icpcontrol.jl")
+
+using .ConvexHull
 include("controller.jl")
+
 include("pushapplier.jl")
 include("visualization.jl")
 

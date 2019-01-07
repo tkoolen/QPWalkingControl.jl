@@ -3,6 +3,7 @@ module ConvexHull
 export
     ConvexHullProblem,
     set_point!,
+    set_vertex!,
     set_vertices!,
     solve!,
     is_point_inside,
@@ -48,10 +49,14 @@ function set_point!(problem::ConvexHullProblem{N, M, T}, point::AbstractVector) 
     problem.point .= point
 end
 
+Base.@propagate_inbounds function set_vertex!(problem::ConvexHullProblem{N, M, T}, i::Integer, vertex::AbstractVector) where {N, M, T}
+    problem.vertices[:, i] = vertex
+end
+
 function set_vertices!(problem::ConvexHullProblem{N, M, T}, vertices::AbstractVector) where {N, M, T}
     @boundscheck length(vertices) === M || error()
     @inbounds for i = Base.OneTo(M)
-        problem.vertices[:, i] = vertices[i]
+        set_vertex!(problem, i, vertices[i])
     end
 end
 

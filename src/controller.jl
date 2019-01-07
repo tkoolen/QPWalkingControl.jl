@@ -1,4 +1,4 @@
-struct PushRecoveryController{M<:MomentumBasedController}
+struct PushRecoveryController{M<:MomentumBasedController, C<:ConvexHullProblem}
     lowlevel::M
     robotmass::Float64
 
@@ -13,13 +13,16 @@ struct PushRecoveryController{M<:MomentumBasedController}
 
     comref::Point3D{SVector{3, Float64}}
     jointrefs::Dict{JointID, Float64}
+
+    convexhullproblem::C
 end
 
 function PushRecoveryController(
         lowlevel::MomentumBasedController,
         feet::Vector{<:RigidBody},
         pelvis::RigidBody,
-        nominalstate::MechanismState;
+        nominalstate::MechanismState,
+        convexhulloptimizer::MOI.AbstractOptimizer;
         joint_regularization::Float64 = 0.05,
         linear_momentum_weight::Float64 = 1.0,
         icpcontroller::ICPController = ICPController(lowlevel.state.mechanism),
@@ -48,14 +51,22 @@ function PushRecoveryController(
     jointtasks = Dict(JointID(j) => JointAccelerationTask(j) for j in positioncontroljoints)
     addtask!.(Ref(lowlevel), collect(values(jointtasks)))
 
+    num_contacts = sum(length, values(lowlevel.contacts))
+    convexhullproblem = ConvexHullProblem{2, num_contacts, Float64}(convexhulloptimizer)
+
     PushRecoveryController(
         lowlevel, m,
         foottasks, linmomtask, pelvistask, jointtasks,
         icpcontroller, pelvisgains, jointgains,
-        comref, jointrefs)
+        comref, jointrefs,
+        convexhullproblem)
 end
 
 function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, state::MechanismState)
+    # Support polygon setup
+    convexhullproblem = controller.convexhullproblem
+    update_support_polygon_problem!(convexhullproblem, state, controller.lowlevel.contacts)
+
     # Linear momentum control
     m = controller.robotmass
     c = center_of_mass(state)
@@ -88,4 +99,17 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
 
     controller.lowlevel(τ, t, state)
     τ
+end
+
+function update_support_polygon_problem!(convexhullproblem::ConvexHullProblem, state::MechanismState, contacts)
+    i = 1
+    for (body, contactpoints) in contacts
+        to_world = transform_to_root(state, body)
+        for contactpoint in contactpoints
+            position = transform(contactpoint.position::Point3D{SVector{3, Float64}}, to_world)
+            @inbounds set_vertex!(convexhullproblem, i, SVector(position.v[1], position.v[2]))
+            i += 1
+        end
+    end
+    nothing
 end
