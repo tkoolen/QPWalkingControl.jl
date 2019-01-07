@@ -15,6 +15,8 @@ using StaticArrays
 using Rotations
 using QPControl
 using Parametron
+using OSQP
+using OSQP.MathOptInterfaceOSQP: OSQPSettings
 
 import Observables
 import InteractBase
@@ -26,11 +28,13 @@ import RigidBodySim
 using InteractBase: button, slider, vbox, pad, px, Widget, style, container
 using Observables: Observable, observe
 using MeshCatMechanisms: MechanismVisualizer
-
 const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
 include("convexhull.jl")
+
+using .ConvexHull
+
 include("icpcontrol.jl")
 include("controller.jl")
 include("pushapplier.jl")

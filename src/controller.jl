@@ -1,4 +1,4 @@
-struct PushRecoveryController{M<:MomentumBasedController}
+struct PushRecoveryController{M<:MomentumBasedController, C<:ConvexHullProblem}
     lowlevel::M
     robotmass::Float64
 
@@ -13,6 +13,8 @@ struct PushRecoveryController{M<:MomentumBasedController}
 
     comref::Point3D{SVector{3, Float64}}
     jointrefs::Dict{JointID, Float64}
+
+    convexhullproblem::C
 end
 
 function PushRecoveryController(
@@ -22,11 +24,12 @@ function PushRecoveryController(
         nominalstate::MechanismState;
         joint_regularization::Float64 = 0.05,
         linear_momentum_weight::Float64 = 1.0,
-        icpcontroller::ICPController = ICPController(lowlevel.state.mechanism),
+        icpcontroller::ICPController = ICPController(lowlevel.state.mechanism, num_vertices=sum(length, contact_points(foot) for foot in feet)),
         pelvisgains::PDGains = PDGains(20., 2 * sqrt(20.0)),
         jointgains = Dict(JointID(j) => PDGains(100.0, 20.) for j in tree_joints(lowlevel.state.mechanism)),
         comref::Point3D = center_of_mass(nominalstate) - FreeVector3D(root_frame(lowlevel.state.mechanism), 0., 0., 0.05),
-        jointrefs = Dict(JointID(j) => configuration(nominalstate, j)[1] for j in tree_joints(lowlevel.state.mechanism) if joint_type(j) isa Revolute))
+        jointrefs = Dict(JointID(j) => configuration(nominalstate, j)[1] for j in tree_joints(lowlevel.state.mechanism) if joint_type(j) isa Revolute),
+        convex_hull_atol=1e-3)
     mechanism = lowlevel.state.mechanism
     world = root_body(mechanism)
     worldframe = root_frame(mechanism)
@@ -48,11 +51,15 @@ function PushRecoveryController(
     jointtasks = Dict(JointID(j) => JointAccelerationTask(j) for j in positioncontroljoints)
     addtask!.(Ref(lowlevel), collect(values(jointtasks)))
 
+    num_contacts = length(lowlevel.contacts)
+    convexhullproblem = ConvexHullProblem{2, num_contacts, Float64}(convex_hull_optimizer(convex_hull_atol))
+
     PushRecoveryController(
         lowlevel, m,
         foottasks, linmomtask, pelvistask, jointtasks,
         icpcontroller, pelvisgains, jointgains,
-        comref, jointrefs)
+        comref, jointrefs,
+        convexhullproblem)
 end
 
 function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, state::MechanismState)
