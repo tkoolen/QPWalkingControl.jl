@@ -81,9 +81,9 @@ version = "0.5.0"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections", "Random", "Serialization", "Test"]
-git-tree-sha1 = "8fc6e166e24fda04b2b648d4260cdad241788c54"
+git-tree-sha1 = "ca971f03e146cf144a9e2f2ce59674f5bf0e8038"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.14.0"
+version = "0.15.0"
 
 [[Dates]]
 deps = ["Printf"]
@@ -107,9 +107,9 @@ version = "4.31.2"
 
 [[DiffEqCallbacks]]
 deps = ["DataStructures", "DiffEqBase", "LinearAlgebra", "OrdinaryDiffEq", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Test"]
-git-tree-sha1 = "254c1521f324759ec89976f7bcd4ed2a3f15dd5c"
+git-tree-sha1 = "027a13f010f2a93b2df725b7f6202590ce6f559d"
 uuid = "459566f4-90b8-5000-8ac3-15dfb0a30def"
-version = "2.4.0"
+version = "2.5.2"
 
 [[DiffEqDiffTools]]
 deps = ["LinearAlgebra", "Test"]
@@ -159,9 +159,9 @@ version = "1.3.0"
 
 [[FileIO]]
 deps = ["Pkg", "Random", "Test"]
-git-tree-sha1 = "1a114d08094e7267ba8d4d684f930d5a722184de"
+git-tree-sha1 = "c94b0787956629036fb2b20fccde9e52b89d079a"
 uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-version = "1.0.4"
+version = "1.0.5"
 
 [[FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -174,9 +174,9 @@ version = "0.5.3"
 
 [[ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "InteractiveUtils", "LinearAlgebra", "NaNMath", "Random", "SparseArrays", "SpecialFunctions", "StaticArrays", "Test"]
-git-tree-sha1 = "b91250044374764e7c29af59a774c4b8d6100b6e"
+git-tree-sha1 = "e393bd3b9102659fb24fe88caedec41f2bc2e7de"
 uuid = "f6369f11-7733-5829-9624-2563aa707210"
-version = "0.10.1"
+version = "0.10.2"
 
 [[FunctionWrappers]]
 deps = ["Compat"]
@@ -228,9 +228,9 @@ version = "0.9.0"
 
 [[InteractBase]]
 deps = ["Base64", "CSSUtil", "Colors", "DataStructures", "Dates", "JSExpr", "JSON", "Knockout", "Observables", "Random", "Test", "WebIO", "Widgets"]
-git-tree-sha1 = "494156a2e3fb192210bd8404da8de1d423d48bb1"
+git-tree-sha1 = "c831c36639b30177440f394e82ec7fd1a6b87bab"
 uuid = "d3863d7c-f0c8-5437-a7b4-3ae773c01009"
-version = "0.8.1"
+version = "0.8.2"
 
 [[InteractBulma]]
 deps = ["InteractBase", "Reexport", "Test"]
@@ -356,10 +356,10 @@ uuid = "931e9471-e8fb-5385-a477-07ad12718aca"
 version = "0.1.2"
 
 [[MeshCat]]
-deps = ["AssetRegistry", "Base64", "BinDeps", "Colors", "CoordinateTransformations", "DocStringExtensions", "GeometryTypes", "JSExpr", "JSON", "LinearAlgebra", "MsgPack", "Mux", "Parameters", "Pkg", "Requires", "Rotations", "Sockets", "StaticArrays", "Test", "UUIDs", "WebIO"]
-path = "/home/twan/.julia/dev/MeshCat"
+deps = ["AssetRegistry", "Base64", "BinDeps", "Colors", "CoordinateTransformations", "DocStringExtensions", "GeometryTypes", "JSExpr", "JSON", "Libdl", "LinearAlgebra", "MsgPack", "Mux", "Parameters", "Pkg", "Requires", "Rotations", "Sockets", "StaticArrays", "Test", "UUIDs", "WebIO"]
+git-tree-sha1 = "1be3ee466995ddbdfa6d6ef3d0cb12ca667b4235"
 uuid = "283c5d60-a78f-5afe-a0af-af636b173e11"
-version = "0.5.0+"
+version = "0.5.0"
 
 [[MeshCatMechanisms]]
 deps = ["ColorTypes", "CoordinateTransformations", "GeometryTypes", "InteractBase", "Interpolations", "LoopThrottle", "MechanismGeometries", "MeshCat", "OrderedCollections", "Pkg", "Random", "RigidBodyDynamics", "Test"]
@@ -389,10 +389,10 @@ uuid = "46d2c3a1-f734-5fdb-9937-b9b9aeba4221"
 version = "0.2.1"
 
 [[Mustache]]
-deps = ["Tables", "Test"]
-git-tree-sha1 = "be8d12b4a84ed7b592a6540b71c664440a4dd7f1"
+deps = ["Printf", "Tables", "Test"]
+git-tree-sha1 = "9a548a873a8de9f982284817b89ae0c5faa5a80b"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
-version = "0.5.8"
+version = "0.5.10"
 
 [[Mux]]
 deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Lazy", "Pkg", "Sockets", "Test", "WebSockets"]
@@ -444,9 +444,9 @@ version = "1.0.2"
 
 [[OrdinaryDiffEq]]
 deps = ["DataStructures", "DiffEqBase", "DiffEqDiffTools", "DiffEqOperators", "ExponentialUtilities", "ForwardDiff", "GenericSVD", "InteractiveUtils", "LinearAlgebra", "Logging", "MuladdMacro", "NLsolve", "Parameters", "Printf", "Random", "RecursiveArrayTools", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "ed6acc9ac458937881de6202fbaaa6cc7da97c7e"
+git-tree-sha1 = "4c77f0c8d69158bd5c1b4a5bd9d7a3f189744a58"
 uuid = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-version = "4.18.3"
+version = "4.21.0"
 
 [[Parameters]]
 deps = ["Markdown", "OrderedCollections", "REPL", "Test"]
@@ -479,11 +479,11 @@ deps = ["Printf"]
 uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
-deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "Random", "RigidBodyDynamics", "Rotations", "StaticArrays", "Test"]
-git-tree-sha1 = "2bd129acea8acea60f46b1d850fc8532e0da5384"
+deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
+git-tree-sha1 = "0f0b8774c936fb92eabd5c985020254ba5879c14"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/QPControl.jl.git"
-uuid = "ab1c7e18-f4ed-52ae-aa6d-a660f8b86f43"
+uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"
 version = "0.0.0"
 
 [[REPL]]
@@ -508,9 +508,9 @@ version = "0.6.0"
 
 [[RecursiveArrayTools]]
 deps = ["RecipesBase", "Requires", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "152afd0272d2f468c9f564d6f64cc3c10a8c1e94"
+git-tree-sha1 = "c8f4e17fc7113ef7243450a8bba79981542175b6"
 uuid = "731186ca-8d62-57ce-b412-fbd966d074cd"
-version = "0.18.5"
+version = "0.18.6"
 
 [[Reexport]]
 deps = ["Pkg"]
@@ -526,17 +526,15 @@ version = "0.5.2"
 
 [[RigidBodyDynamics]]
 deps = ["DocStringExtensions", "LightXML", "LinearAlgebra", "LoopThrottle", "Profile", "Random", "Reexport", "Rotations", "SparseArrays", "StaticArrays", "Test", "TypeSortedCollections"]
-git-tree-sha1 = "f419f8ad297421e4ed06e5cd9c1236f689ec1a79"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaRobotics/RigidBodyDynamics.jl.git"
+git-tree-sha1 = "e60db589b1cc81c16abda9a1cdebecbc49eb1885"
 uuid = "366cf18f-59d5-5db9-a4de-86a9f6786172"
-version = "1.3.0+"
+version = "1.3.0"
 
 [[RigidBodySim]]
-deps = ["Blink", "CSSUtil", "DataStructures", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "DocStringExtensions", "ForwardDiff", "InteractBase", "LinearAlgebra", "MeshCatMechanisms", "Observables", "OrdinaryDiffEq", "Printf", "Random", "RigidBodyDynamics", "Test", "WebIO"]
-path = "/home/twan/.julia/dev/RigidBodySim"
+deps = ["Blink", "CSSUtil", "Compat", "DataStructures", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "DocStringExtensions", "ForwardDiff", "InteractBase", "JSExpr", "MeshCatMechanisms", "Observables", "OrdinaryDiffEq", "Random", "RigidBodyDynamics", "WebIO"]
+git-tree-sha1 = "8bfd08c7fbc5050dfaf966f4787db8ec2f1c7217"
 uuid = "e61f16d8-a6b7-5689-8d03-627c2b27ebce"
-version = "1.0.0+"
+version = "1.0.0"
 
 [[Roots]]
 deps = ["Compat", "Printf"]
@@ -546,9 +544,9 @@ version = "0.7.4"
 
 [[Rotations]]
 deps = ["LinearAlgebra", "Random", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "b629771d0de88979cbdbf72ceddc54de58fde149"
+git-tree-sha1 = "ffcdd81d77b333ad0507aa4d021f61a461b6681d"
 uuid = "6038ab10-8711-5258-84ad-4b1120ba62dc"
-version = "0.9.1"
+version = "0.10.0"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -575,9 +573,15 @@ version = "0.7.2"
 
 [[StaticArrays]]
 deps = ["InteractiveUtils", "LinearAlgebra", "Random", "Statistics", "Test"]
-git-tree-sha1 = "97c4bf0f647488dd7ac01ea12be5885f88762938"
+git-tree-sha1 = "1eb114d6e23a817cd3e99abc3226190876d7c898"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "0.10.0"
+version = "0.10.2"
+
+[[StaticUnivariatePolynomials]]
+deps = ["Test"]
+git-tree-sha1 = "5998b176e48a74a9017d1e4916a60544a9ce79c8"
+uuid = "6f584044-cad5-5b68-a429-1e244a824f76"
+version = "0.2.0"
 
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
@@ -594,10 +598,10 @@ uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
 version = "0.4.1"
 
 [[Tables]]
-deps = ["Requires", "Test"]
-git-tree-sha1 = "940944e6b68a35046282897a2218891c7cf14a32"
+deps = ["IteratorInterfaceExtensions", "Requires", "TableTraits", "Test"]
+git-tree-sha1 = "89f8fde6394579580fb75088e45ad95551199c7c"
 uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "0.1.12"
+version = "0.1.14"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
