@@ -24,6 +24,7 @@ WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [targets]
-test = ["Test"]
+test = ["Test", "UnicodePlots"]

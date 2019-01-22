@@ -14,7 +14,7 @@ using RigidBodyDynamics.PDControl
 using StaticArrays
 using Rotations
 using QPControl
-# using Parametron
+using Parametron
 
 import Observables
 import InteractBase
@@ -35,6 +35,7 @@ include("util.jl")
 
 using .ConvexHull
 include("icpcontrol.jl")
+include("icptrajectory.jl")
 include("controller.jl")
 
 include("pushapplier.jl")
