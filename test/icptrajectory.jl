@@ -11,7 +11,7 @@ using LinearAlgebra
 
 const MOI = MathOptInterface
 
-import PushRecovery: ICPTrajectoryGenerator, solve!, initial_icp, cop
+import PushRecovery: ICPTrajectoryGenerator, solve!, initial_icp, cop, find_segment
 import PushRecovery: SHRep
 
 using UnicodePlots
@@ -32,7 +32,7 @@ end
     z = 0.95
     ω = sqrt(g / z)
     num_segments = 4
-    generator = ICPTrajectoryGenerator{Float64, 4}(optimizer(), ω, num_segments)
+    generator = ICPTrajectoryGenerator{Float64, 4}(optimizer(), num_segments)
 
     foot_width = 0.15
     foot_length = 0.3
@@ -54,6 +54,7 @@ end
 
     for i = 1 : num_segments
         generator.Δts[i] = Δt
+        generator.ωs[i] = ω
         generator.cop_polyhedra[i] = foot_polygon + foot_centers[i]
         generator.preferred_cops[i] = foot_centers[i]
     end
@@ -67,6 +68,29 @@ end
     for i = 1 : num_segments
         C = generator.cop_polyhedra[i]
         @test cop(generator, i) ∈ C
+    end
+
+    let t = 0.0
+        for (i, Δt) in enumerate(generator.Δts)
+            for t′ in (max(0.0, t - eps()), t, t + eps())
+                ξ, ξd = generator(t′)
+                @test ξ ≈ initial_icp(generator, i)
+                i′, t0′ = find_segment(generator, t′)
+                if t′ > t
+                    @test i′ == i
+                    @test t0′ == t
+                elseif t′ < t
+                    @test i′ == i - 1
+                end
+            end
+            t += Δt
+        end
+
+        for t′ in (max(0.0, t - eps()), t, t + eps())
+            ξ, ξd = generator(t′)
+            @test ξ ≈ generator.final_icp[] atol=1e-4
+            @test ξd ≈ SVector(0.0, 0.0) atol=1e-4
+        end
     end
 
     allocs = @allocated solve!(generator)

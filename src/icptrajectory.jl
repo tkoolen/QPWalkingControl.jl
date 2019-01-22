@@ -3,12 +3,13 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
     cops::Vector{SVector{2, Variable}}
     icps::Vector{SVector{2, Variable}}
     Δts::Vector{T}
+    ωs::Vector{T}
     cop_polyhedra::Vector{SHRep{M, 2, T, L}}
     preferred_cops::Vector{SVector{2, T}}
     initial_icp::Base.RefValue{SVector{2, T}}
     final_icp::Base.RefValue{SVector{2, T}}
 
-    function ICPTrajectoryGenerator{T, M}(optimizer::O, ω::Number, num_segments::Integer) where {T, M, O<:MOI.AbstractOptimizer}
+    function ICPTrajectoryGenerator{T, M}(optimizer::O, num_segments::Integer) where {T, M, O<:MOI.AbstractOptimizer}
         n = num_segments
         L = M * 2
 
@@ -20,6 +21,7 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
 
         # Parameters
         Δts = Parameter(model, val=zeros(T, n))
+        ωs = Parameter(model, val=zeros(T, n))
         cop_polyhedra = Parameter(model, val=[zero(SHRep{M, 2, T, L}) for i = 1 : n])
         preferred_cops = Parameter(model, val=[zero(SVector{2, T}) for i = 1 : n])
         initial_icp = Parameter(model, val=zero(SVector{2, T}))
@@ -38,6 +40,7 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
         # ICP dynamics
         for i = 1 : n
             Δt = @expression Δts[i]
+            ω = @expression ωs[i]
             w = @expression exp(ω * Δt)
             next_icp = @expression w * icps[i] + (1 - w) * cops[i]
             if i < n
@@ -55,9 +58,10 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
         end
         @objective model Minimize objective
 
-        new{T, M, O, L}(model,
+        new{T, M, O, L}(
+            model,
             cops, icps,
-            Δts.val[], cop_polyhedra.val[], preferred_cops.val[],
+            Δts.val[], ωs.val[], cop_polyhedra.val[], preferred_cops.val[],
             initial_icp.val, final_icp.val
         )
     end
@@ -87,4 +91,45 @@ end
 
 function cop(generator::ICPTrajectoryGenerator, segment_number::Integer)
     value.(generator.model, generator.cops[segment_number])
+end
+
+final_time(generator::ICPTrajectoryGenerator) = sum(generator.Δts)
+
+function find_segment(generator::ICPTrajectoryGenerator{T}, t::Number) where T
+    i = 1
+    t0 = zero(T)
+    for Δt in generator.Δts
+        if t <= t0 + Δt
+            break
+        else
+            i += 1
+            t0 += Δt
+        end
+    end
+    i, t0
+end
+
+function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
+    # Find segment index and segment start time
+    i, t0 = find_segment(generator, t)
+    num_segments = length(generator.Δts)
+
+    if i <= num_segments
+        # Use (13) in Capturability-based Analysis Part 1 to find ICP ξ
+        ξ0 = initial_icp(generator, i)
+        p = cop(generator, i)
+        Δt = t - t0
+        ω = generator.ωs[i]
+        w = exp(ω * Δt)
+        ξ = w * ξ0 + (1 - w) * p
+
+        # Use (12) in Capturability-based Analysis Part 1 to find ICP time derivative ξd
+        ξd = ω * (ξ - p)
+    else
+        # Hold at the final ICP
+        ξ = generator.final_icp[]
+        ξd = zero(ξ)
+    end
+
+    ξ, ξd
 end
