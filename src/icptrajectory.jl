@@ -8,6 +8,7 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
     preferred_cops::Vector{SVector{2, T}}
     initial_icp::Base.RefValue{SVector{2, T}}
     final_icp::Base.RefValue{SVector{2, T}}
+    num_active_segments::Base.RefValue{Int}
 
     function ICPTrajectoryGenerator{T, M}(optimizer::O, num_segments::Integer) where {T, M, O<:MOI.AbstractOptimizer}
         n = num_segments
@@ -39,9 +40,7 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
 
         # ICP dynamics
         for i = 1 : n
-            Δt = @expression Δts[i]
-            ω = @expression ωs[i]
-            w = @expression exp(ω * Δt)
+            w = @expression exp(ωs[i] * Δts[i])
             next_icp = @expression w * icps[i] + (1 - w) * cops[i]
             if i < n
                 @constraint model next_icp == icps[i + 1]
@@ -58,13 +57,35 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
         end
         @objective model Minimize objective
 
+        num_active_segments = Ref(0)
+
         new{T, M, O, L}(
             model,
             cops, icps,
             Δts.val[], ωs.val[], cop_polyhedra.val[], preferred_cops.val[],
-            initial_icp.val, final_icp.val
+            initial_icp.val, final_icp.val,
+            num_active_segments
         )
     end
+end
+
+function Base.empty!(generator::ICPTrajectoryGenerator)
+    generator.Δts .= 0
+    generator.num_active_segments[] = 0
+    generator
+end
+
+function push_segment!(generator::ICPTrajectoryGenerator,
+        Δt::Number, ω::Number, cop_polyhedron::SHRep, preferred_cop::SVector)
+    i = generator.num_active_segments[] += 1
+    @boundscheck i <= length(generator.Δts) || error()
+    @inbounds begin
+        generator.Δts[i] = Δt
+        generator.ωs[i] = ω
+        generator.cop_polyhedra[i] = cop_polyhedron
+        generator.preferred_cops[i] = preferred_cop
+    end
+    generator
 end
 
 function solve!(generator::ICPTrajectoryGenerator)
@@ -110,11 +131,12 @@ function find_segment(generator::ICPTrajectoryGenerator{T}, t::Number) where T
 end
 
 function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
-    # Find segment index and segment start time
-    i, t0 = find_segment(generator, t)
-    num_segments = length(generator.Δts)
+    t < 0 && throw(ArgumentError("Cannot evaluate at a negative time."))
 
-    if i <= num_segments
+    if t < sum(generator.Δts)
+        # Find segment index and segment start time
+        i, t0 = find_segment(generator, t)
+
         # Use (13) in Capturability-based Analysis Part 1 to find ICP ξ
         ξ0 = initial_icp(generator, i)
         p = cop(generator, i)
