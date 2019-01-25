@@ -1,4 +1,4 @@
-struct PushRecoveryController{M<:MomentumBasedController, L, C<:ConvexHullProblem}
+struct PushRecoveryController{M<:MomentumBasedController, L}
     lowlevel::M
     robotmass::Float64
     gravitymag::Float64
@@ -15,7 +15,8 @@ struct PushRecoveryController{M<:MomentumBasedController, L, C<:ConvexHullProble
     comref::Point3D{SVector{3, Float64}}
     jointrefs::Dict{JointID, Float64}
 
-    support_polygon_problem::C
+    contact_points::Vector{SVector{2, Float64}}
+    support_polygon::FlexibleConvexHull{Float64}
 end
 
 function PushRecoveryController(
@@ -23,7 +24,6 @@ function PushRecoveryController(
         feet::Vector{<:RigidBody},
         pelvis::RigidBody,
         nominalstate::MechanismState,
-        convexhulloptimizer::MOI.AbstractOptimizer;
         joint_regularization::Float64 = 0.05,
         linear_momentum_weight::Float64 = 1.0,
         linear_momentum_controller = ICPController(lowlevel.state.mechanism),
@@ -54,19 +54,21 @@ function PushRecoveryController(
     addtask!.(Ref(lowlevel), collect(values(jointtasks)), 1.0)
 
     num_contacts = sum(length, values(lowlevel.contacts))
-    support_polygon_problem = ConvexHullProblem{2, num_contacts, Float64}(convexhulloptimizer)
+    contact_points = [zero(SVector{2, Float64}) for _ = 1 : num_contacts]
+    support_polygon = ConvexHull{CCW, Float64}()
+    sizehint!(support_polygon, num_contacts)
 
     PushRecoveryController(
         lowlevel, m, g,
         foottasks, linmomtask, pelvistask, jointtasks,
         linear_momentum_controller, pelvisgains, jointgains,
         comref, jointrefs,
-        support_polygon_problem)
+        contact_points, support_polygon)
 end
 
 function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, state::MechanismState)
     # Support polygon setup
-    set_contact_points!(controller.support_polygon_problem, state, controller.lowlevel.contacts)
+    update_contacts!(controller.contact_points, controller.support_polygon, state, controller.lowlevel.contacts)
 
     # State transitions
 
@@ -75,7 +77,7 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     h = momentum(state)
     ċ = FreeVector3D(h.frame, linear(h) / controller.robotmass)
     z_des = controller.comref.v[3] # TODO
-    l̇_des = controller.linear_momentum_controller(c, ċ, z_des, controller.support_polygon_problem; ξ_des=controller.comref) # TODO: remove ξ_des
+    l̇_des = controller.linear_momentum_controller(c, ċ, z_des, controller.support_polygon; ξ_des=controller.comref) # TODO: remove ξ_des
     centroidal = centroidal_frame(controller.lowlevel)
     world_to_centroidal = Transform3D(c.frame, centroidal, -c.v)
     l̇_des = transform(l̇_des, world_to_centroidal)
@@ -103,15 +105,16 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     τ
 end
 
-function set_contact_points!(support_polygon_problem::ConvexHullProblem, state::MechanismState, contacts)
+function update_contacts!(contact_points::AbstractVector{<:SVector{2}}, support_polygon::ConvexHull, state::MechanismState, contacts)
     i = 1
     for (body, contactpoints) in contacts
         to_world = transform_to_root(state, body)
         for contactpoint in contactpoints
             position = transform(contactpoint.position::Point3D{SVector{3, Float64}}, to_world)
-            @inbounds set_vertex!(support_polygon_problem, i, horizontal_projection(position.v))
+            @inbounds contact_points[i] = horizontal_projection(position.v)
             i += 1
         end
     end
+    jarvis_march!(support_polygon, contact_points)
     nothing
 end

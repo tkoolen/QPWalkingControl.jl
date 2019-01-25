@@ -89,8 +89,6 @@ end
 
             for t′ in (t, t + eps())
                 ξ, ξd = generator(t′)
-                @show num_active_segments
-                @show t′
                 @test ξ ≈ generator.final_icp[] atol=1e-4
                 @test ξd ≈ SVector(0.0, 0.0) atol=1e-4
             end

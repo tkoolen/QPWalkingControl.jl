@@ -98,10 +98,12 @@ function checkstatus(model::Parametron.Model)
     if !ok
         okish = terminationstatus(model) == MOI.AlmostSuccess && primalstatus(model) == MOI.UnknownResultStatus
         if !okish
-            @show terminationstatus(model)
-            @show primalstatus(model)
-            @show dualstatus(model)
-            println()
+            """
+            Solve failed.
+            * termination status: $(terminationstatus(model))
+            * primal status: $(primalstatus(model))
+            * dual status: $(dualstatus(model))
+            """ |> error
         end
     end
 end

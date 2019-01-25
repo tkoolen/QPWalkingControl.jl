@@ -9,7 +9,7 @@ function ICPController(mechanism::Mechanism{T}) where T
     ICPController(T(3.0), critically_damped_gains(10.0), mass(mechanism), norm(mechanism.gravitational_acceleration))
 end
 
-function (controller::ICPController{T})(c::Point3D, cd::FreeVector3D, z_des::Number, support_polygon_problem::ConvexHullProblem{2};
+function (controller::ICPController{T})(c::Point3D, cd::FreeVector3D, z_des::Number, support_polygon::ConvexHull;
         zd_des=zero(T), zdd_des=zero(T), ξ_des=zero(c), ξd_des=zero(cd)) where T
     # Equation (27) in "Design of a momentum-based control framework and application to the humanoid robot atlas"
     # minus the integral term.
@@ -24,9 +24,7 @@ function (controller::ICPController{T})(c::Point3D, cd::FreeVector3D, z_des::Num
     ξ = icp(c, cd, ω)
     cmp_des = ξ - ξd_des / ω + kxy * (ξ - ξ_des)
 
-    set_point!(support_polygon_problem, horizontal_projection(cmp_des.v))
-    solve!(support_polygon_problem)
-    cmp_des_projected_xy = closest_point(support_polygon_problem)
+    cmp_des_projected_xy = closest_point(horizontal_projection(cmp_des.v), support_polygon)
     cmp_des_projected = Point3D(cmp_des.frame, cmp_des_projected_xy[1], cmp_des_projected_xy[2], cmp_des.v[3])
 
     ld_des_xy = (c - cmp_des_projected) * (m * gz) / z

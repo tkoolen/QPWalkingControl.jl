@@ -15,6 +15,7 @@ using StaticArrays
 using Rotations
 using QPControl
 using Parametron
+using PlanarConvexHulls
 
 import Observables
 import InteractBase
@@ -30,10 +31,10 @@ using MeshCatMechanisms: MechanismVisualizer
 const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
-include("convexhull.jl")
+const FlexibleConvexHull{T} = ConvexHull{CCW, T, SVector{2, T}, Vector{SVector{2, T}}}
+
 include("util.jl")
 
-using .ConvexHull
 include("icpcontrol.jl")
 include("icptrajectory.jl")
 include("controller.jl")
