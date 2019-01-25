@@ -2,6 +2,8 @@ module PushRecovery
 
 export
     PushRecoveryController,
+    ICPController,
+    ICPTrajectoryGenerator,
     PushApplier,
     PushRecoveryGUI,
     Widget # from InteractBase

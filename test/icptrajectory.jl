@@ -8,6 +8,7 @@ using OSQP.MathOptInterfaceOSQP
 using Test
 using Random
 using LinearAlgebra
+using PlanarConvexHulls
 
 const MOI = MathOptInterface
 
@@ -40,16 +41,17 @@ end
     foot_length = 0.3
     step_length = 0.5
     step_width = 0.1
-    Δt = 0.75
-    foot_polygon = SHRep(
-        @SMatrix([
-             1.0  0.0;
-            -1.0  0.0;
-             0.0  1.0;
-             0.0 -1.0
-        ]),
-        SVector(foot_width / 2, foot_width / 2, foot_length / 2, foot_length / 2)
+    foot_points = SVector(
+        SVector(-foot_width / 2, -foot_length / 2),
+        SVector( foot_width / 2, -foot_length / 2),
+        SVector( foot_width / 2,  foot_length / 2),
+        SVector(-foot_width / 2,  foot_length / 2)
     )
+    foot_polygon_vrep = ConvexHull{CCW}(foot_points)
+    foot_polygon_hrep = SHRep(foot_polygon_vrep)
+
+    Δt = 0.75
+
     foot_centers = map(1 : num_segments) do i
         SVector((i - 1) * step_length, (-1)^i * step_width)
     end
@@ -57,7 +59,7 @@ end
     for num_active_segments in 1 : num_segments
         empty!(generator)
         for i = 1 : num_active_segments
-            push_segment!(generator, Δt, ω, foot_polygon + foot_centers[i], foot_centers[i])
+            push_segment!(generator, Δt, ω, foot_polygon_hrep + foot_centers[i], foot_centers[i])
         end
         generator.initial_icp[] = foot_centers[1] + SVector(0.02, 0.01)
         generator.final_icp[] = foot_centers[num_active_segments]

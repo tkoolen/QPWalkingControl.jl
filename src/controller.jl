@@ -15,7 +15,7 @@ struct PushRecoveryController{M<:MomentumBasedController, L}
     comref::Point3D{SVector{3, Float64}}
     jointrefs::Dict{JointID, Float64}
 
-    contact_points::Vector{SVector{2, Float64}}
+    projected_contact_points::Vector{SVector{2, Float64}}
     support_polygon::FlexibleConvexHull{Float64}
 end
 
@@ -24,9 +24,9 @@ function PushRecoveryController(
         feet::Vector{<:RigidBody},
         pelvis::RigidBody,
         nominalstate::MechanismState,
+        linear_momentum_controller;
         joint_regularization::Float64 = 0.05,
         linear_momentum_weight::Float64 = 1.0,
-        linear_momentum_controller = ICPController(lowlevel.state.mechanism),
         pelvisgains::PDGains = PDGains(20., 2 * sqrt(20.0)),
         jointgains = Dict(JointID(j) => PDGains(100.0, 20.) for j in tree_joints(lowlevel.state.mechanism)),
         comref::Point3D = center_of_mass(nominalstate) - FreeVector3D(root_frame(lowlevel.state.mechanism), 0., 0., 0.05),
@@ -54,7 +54,7 @@ function PushRecoveryController(
     addtask!.(Ref(lowlevel), collect(values(jointtasks)), 1.0)
 
     num_contacts = sum(length, values(lowlevel.contacts))
-    contact_points = [zero(SVector{2, Float64}) for _ = 1 : num_contacts]
+    projected_contact_points = [zero(SVector{2, Float64}) for _ = 1 : num_contacts]
     support_polygon = ConvexHull{CCW, Float64}()
     sizehint!(support_polygon, num_contacts)
 
@@ -63,12 +63,12 @@ function PushRecoveryController(
         foottasks, linmomtask, pelvistask, jointtasks,
         linear_momentum_controller, pelvisgains, jointgains,
         comref, jointrefs,
-        contact_points, support_polygon)
+        projected_contact_points, support_polygon)
 end
 
 function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, state::MechanismState)
     # Support polygon setup
-    update_contacts!(controller.contact_points, controller.support_polygon, state, controller.lowlevel.contacts)
+    update_contacts!(controller.projected_contact_points, controller.support_polygon, state, controller.lowlevel.contacts)
 
     # State transitions
 
@@ -76,21 +76,17 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     c = center_of_mass(state)
     h = momentum(state)
     ċ = FreeVector3D(h.frame, linear(h) / controller.robotmass)
-    z_des = controller.comref.v[3] # TODO
-    l̇_des = controller.linear_momentum_controller(c, ċ, z_des, controller.support_polygon; ξ_des=controller.comref) # TODO: remove ξ_des
-    centroidal = centroidal_frame(controller.lowlevel)
-    world_to_centroidal = Transform3D(c.frame, centroidal, -c.v)
+    l̇_des = controller.linear_momentum_controller(t, c, ċ, controller.support_polygon)
+    world_to_centroidal = Transform3D(c.frame, centroidal_frame(controller.lowlevel), -c.v)
     l̇_des = transform(l̇_des, world_to_centroidal)
     setdesired!(controller.linmomtask, l̇_des)
 
     # Pelvis orientation control
-    pelvistask = controller.pelvistask
-    pelvisgains = controller.pelvisgains
-    pelvis = target(pelvistask.path)
+    pelvis = target(controller.pelvistask.path)
     Hpelvis = transform_to_root(state, pelvis)
     Tpelvis = transform(twist_wrt_world(state, pelvis), inv(Hpelvis))
-    ωd_pelvis_des = FreeVector3D(Tpelvis.frame, pd(pelvisgains, rotation(Hpelvis), Tpelvis.angular))
-    setdesired!(pelvistask, ωd_pelvis_des)
+    ωd_pelvis_des = FreeVector3D(Tpelvis.frame, pd(controller.pelvisgains, rotation(Hpelvis), Tpelvis.angular))
+    setdesired!(controller.pelvistask, ωd_pelvis_des)
 
     # Joint position control
     for jointid in keys(controller.jointtasks)
@@ -105,16 +101,20 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     τ
 end
 
-function update_contacts!(contact_points::AbstractVector{<:SVector{2}}, support_polygon::ConvexHull, state::MechanismState, contacts)
+function update_contacts!(
+        projected_contact_points::AbstractVector{<:SVector{2}},
+        support_polygon::ConvexHull,
+        state::MechanismState,
+        contacts)
     i = 1
     for (body, contactpoints) in contacts
         to_world = transform_to_root(state, body)
         for contactpoint in contactpoints
             position = transform(contactpoint.position::Point3D{SVector{3, Float64}}, to_world)
-            @inbounds contact_points[i] = horizontal_projection(position.v)
+            @inbounds projected_contact_points[i] = horizontal_projection(position.v)
             i += 1
         end
     end
-    jarvis_march!(support_polygon, contact_points)
+    jarvis_march!(support_polygon, projected_contact_points)
     nothing
 end

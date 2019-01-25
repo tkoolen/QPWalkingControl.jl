@@ -18,6 +18,11 @@ struct SHRep{N, M, T, L}
     b::SVector{N, T}
 end
 
+function SHRep(hull::ConvexHull)
+    A, b = hrep(hull)
+    SHRep(A, b)
+end
+
 function Base.zero(::Type{SHRep{N, M, T, L}}) where {N, M, T, L}
     SHRep(zero(SMatrix{N, M, T, L}), zero(SVector{N, T}))
 end

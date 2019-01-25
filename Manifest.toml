@@ -107,9 +107,9 @@ version = "0.3.2"
 
 [[DiffEqBase]]
 deps = ["Compat", "IteratorInterfaceExtensions", "LinearAlgebra", "RecipesBase", "RecursiveArrayTools", "Requires", "Roots", "SparseArrays", "StaticArrays", "Statistics", "SuiteSparse", "TableTraits", "Test", "TreeViews"]
-git-tree-sha1 = "9b077135e38482dcf74daf2406b9da4dc4dcb0ca"
+git-tree-sha1 = "c60ea94050751f09e3f86dc6182a4cccac9806b8"
 uuid = "2b5f629d-d688-5b77-993f-72d75c75574e"
-version = "4.31.2"
+version = "4.32.0"
 
 [[DiffEqCallbacks]]
 deps = ["DataStructures", "DiffEqBase", "LinearAlgebra", "OrdinaryDiffEq", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Test"]
@@ -480,7 +480,7 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlanarConvexHulls]]
 deps = ["LinearAlgebra", "StaticArrays"]
-git-tree-sha1 = "729c3c13865b22a697f2a3a416551b8cb6eb6b7b"
+git-tree-sha1 = "5a263a3254b618614c33548354601b27d81826ae"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/PlanarConvexHulls.jl.git"
 uuid = "145d500b-351c-58b3-a0aa-f5d7e249d989"
@@ -524,9 +524,9 @@ version = "0.6.0"
 
 [[RecursiveArrayTools]]
 deps = ["ArrayInterface", "RecipesBase", "Requires", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "c7f30631d72d7dd12b99093a22a20cca1b9198f9"
+git-tree-sha1 = "187ea7dd541955102c7035a6668613bdf52022ca"
 uuid = "731186ca-8d62-57ce-b412-fbd966d074cd"
-version = "0.19.1"
+version = "0.20.0"
 
 [[Reexport]]
 deps = ["Pkg"]

@@ -1,22 +1,32 @@
-struct ICPController{T}
+struct ICPController{T, I, Z}
     kxy::T
     zgains::PDGains{T, T}
     m::T
     gz::T
+    icptraj::I
+    ztraj::Z
 end
 
-function ICPController(mechanism::Mechanism{T}) where T
-    ICPController(T(3.0), critically_damped_gains(10.0), mass(mechanism), norm(mechanism.gravitational_acceleration))
+function ICPController(mechanism::Mechanism{T}, icptraj, z_des::Number) where T
+    ztraj = t -> (z_des, zero(z_des), zero(z_des))
+    ICPController(
+        T(3.0),
+        critically_damped_gains(10.0),
+        mass(mechanism),
+        norm(mechanism.gravitational_acceleration),
+        icptraj,
+        ztraj)
 end
 
-function (controller::ICPController{T})(c::Point3D, cd::FreeVector3D, z_des::Number, support_polygon::ConvexHull;
-        zd_des=zero(T), zdd_des=zero(T), ξ_des=zero(c), ξd_des=zero(cd)) where T
+function (controller::ICPController)(t, c::Point3D, cd::FreeVector3D, support_polygon::ConvexHull)
     # Equation (27) in "Design of a momentum-based control framework and application to the humanoid robot atlas"
     # minus the integral term.
     kxy = controller.kxy
     zgains = controller.zgains
     m = controller.m
     gz = controller.gz
+    ξ_des, ξd_des = controller.icptraj(t)
+    z_des, zd_des, zdd_des = controller.ztraj(t)
     z = c.v[3]
     zd = cd.v[3]
     ω = sqrt(abs(gz / z))
