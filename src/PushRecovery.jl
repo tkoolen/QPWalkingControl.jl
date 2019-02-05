@@ -34,11 +34,13 @@ const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
 const FlexibleConvexHull{T} = ConvexHull{CCW, T, SVector{2, T}, Vector{SVector{2, T}}}
+const SPoint3D{T} = Point3D{SVector{3, T}}
 
 include("util.jl")
 
 include("icpcontrol.jl")
 include("icptrajectory.jl")
+include("contactmode.jl")
 include("controller.jl")
 
 include("pushapplier.jl")

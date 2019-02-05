@@ -15,8 +15,7 @@ struct PushRecoveryController{M<:MomentumBasedController, L}
     comref::Point3D{SVector{3, Float64}}
     jointrefs::Dict{JointID, Float64}
 
-    projected_contact_points::Vector{SVector{2, Float64}}
-    support_polygon::FlexibleConvexHull{Float64}
+    contactmode::ContactMode{Float64}
 end
 
 function PushRecoveryController(
@@ -53,22 +52,20 @@ function PushRecoveryController(
     jointtasks = Dict(JointID(j) => JointAccelerationTask(j) for j in positioncontroljoints)
     addtask!.(Ref(lowlevel), collect(values(jointtasks)), 1.0)
 
-    num_contacts = sum(length, values(lowlevel.contacts))
-    projected_contact_points = [zero(SVector{2, Float64}) for _ = 1 : num_contacts]
-    support_polygon = ConvexHull{CCW, Float64}()
-    sizehint!(support_polygon, num_contacts)
+    contactmode = ContactMode{Float64}(worldframe, keys(lowlevel.contacts))
 
     PushRecoveryController(
         lowlevel, m, g,
         foottasks, linmomtask, pelvistask, jointtasks,
         linear_momentum_controller, pelvisgains, jointgains,
         comref, jointrefs,
-        projected_contact_points, support_polygon)
+        contactmode)
 end
 
 function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, state::MechanismState)
-    # Support polygon setup
-    update_contacts!(controller.projected_contact_points, controller.support_polygon, state, controller.lowlevel.contacts)
+    # Update contact mode
+    contactmode = controller.contactmode
+    update_active_contacts!(contactmode, controller.lowlevel.contacts, state)
 
     # State transitions
 
@@ -76,7 +73,7 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     c = center_of_mass(state)
     h = momentum(state)
     ċ = FreeVector3D(h.frame, linear(h) / controller.robotmass)
-    l̇_des = controller.linear_momentum_controller(t, c, ċ, controller.support_polygon)
+    l̇_des = controller.linear_momentum_controller(t, c, ċ, contactmode.hull)
     world_to_centroidal = Transform3D(c.frame, centroidal_frame(controller.lowlevel), -c.v)
     l̇_des = transform(l̇_des, world_to_centroidal)
     setdesired!(controller.linmomtask, l̇_des)
@@ -101,20 +98,17 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     τ
 end
 
-function update_contacts!(
-        projected_contact_points::AbstractVector{<:SVector{2}},
-        support_polygon::ConvexHull,
-        state::MechanismState,
-        contacts)
-    i = 1
+function update_active_contacts!(mode::ContactMode, contacts, state::MechanismState)
     for (body, contactpoints) in contacts
-        to_world = transform_to_root(state, body)
+        bodyid = BodyID(body)
+        active_points_body = mode.active_points_body[bodyid]
+        empty!(active_points_body)
         for contactpoint in contactpoints
-            position = transform(contactpoint.position::Point3D{SVector{3, Float64}}, to_world)
-            @inbounds projected_contact_points[i] = horizontal_projection(position.v)
-            i += 1
+            if QPControl.isenabled(contactpoint)
+                push!(active_points_body, contactpoint.position)
+            end
         end
     end
-    jarvis_march!(support_polygon, projected_contact_points)
+    update!(mode, state)
     nothing
 end
