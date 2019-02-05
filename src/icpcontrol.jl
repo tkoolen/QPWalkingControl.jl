@@ -25,7 +25,9 @@ function (controller::ICPController)(t, c::Point3D, cd::FreeVector3D, support_po
     zgains = controller.zgains
     m = controller.m
     gz = controller.gz
-    ξ_des, ξd_des = controller.icptraj(t)
+    ξ_des_2d, ξd_des_2d = controller.icptraj(t)
+    ξ_des = Point3D(c.frame, ξ_des_2d[1], ξ_des_2d[2], zero(eltype(ξ_des_2d))) # TODO: kind of nasty
+    ξd_des = FreeVector3D(c.frame, ξd_des_2d[1], ξd_des_2d[2], zero(eltype(ξd_des_2d))) # TODO: kind of nasty
     z_des, zd_des, zdd_des = controller.ztraj(t)
     z = c.v[3]
     zd = cd.v[3]

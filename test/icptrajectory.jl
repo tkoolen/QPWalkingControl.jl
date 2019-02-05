@@ -106,7 +106,6 @@ end
             plt = scatterplot(getindex.(cops, 1), getindex.(cops, 2), name = "cop", xlabel= "x", ylabel = "y")
             lineplot!(plt, getindex.(icps, 1), getindex.(icps, 2), name = "icp")
             display(plt)
-            println()
         end
     end
 end
