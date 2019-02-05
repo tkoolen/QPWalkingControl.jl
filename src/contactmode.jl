@@ -2,8 +2,8 @@ struct ContactMode{T}
     frame::CartesianFrame3D
     points_body::Dict{BodyID, Vector{SPoint3D{T}}} # TODO: consider removing (really only there to circumvent allocation)
     points_frame::Dict{BodyID, Vector{SPoint3D{T}}}
-    projected_points_frame::Vector{SVector{2, T}}
-    hull::FlexibleConvexHull{T}
+    projected_points_frame::Vector{Vec2{T}}
+    hull::DConvexHull{T}
 end
 
 function ContactMode{T}(frame::CartesianFrame3D, bodies) where T
@@ -13,8 +13,8 @@ function ContactMode{T}(frame::CartesianFrame3D, bodies) where T
         points_body[BodyID(body)] = SPoint3D{T}[]
         points_frame[BodyID(body)] = SPoint3D{T}[]
     end
-    projected_points_frame = SVector{2, T}[]
-    hull = ConvexHull{CCW, T}()
+    projected_points_frame = Vec2{T}[]
+    hull = DConvexHull{T}()
     ContactMode{T}(frame, points_body, points_frame, projected_points_frame, hull)
 end
 

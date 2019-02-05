@@ -1,3 +1,17 @@
+module Visualization
+
+export Widget # from InteractBase
+
+import Observables
+import InteractBase
+import WebIO
+
+using InteractBase: button, slider, vbox, pad, px, Widget, style, container
+using Observables: Observable, observe
+using ..PushRecovery: PushApplier
+
+using RigidBodyDynamics: FreeVector3D
+
 function InteractBase.Widget(controller::PushApplier; max_force::Number, max_Δt::Number)
     pushbutton = button("Apply push")
     angleslider = slider(range(Float64(-π), stop=Float64(π), length=51), label="θ")
@@ -26,3 +40,5 @@ function InteractBase.Widget(controller::PushApplier; max_force::Number, max_Δt
         pad(10px, style(vbox(pushbutton, angleslider, magnitudeslider, timeslider), :fontFamily => "sans-serif", :fontSize => "10pt")),
     ), :width => "350px")
 end
+
+end # module

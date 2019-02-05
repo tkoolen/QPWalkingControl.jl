@@ -5,9 +5,9 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
     Δts::Vector{T}
     ωs::Vector{T}
     cop_polyhedra::Vector{SHRep{M, 2, T, L}}
-    preferred_cops::Vector{SVector{2, T}}
-    initial_icp::Base.RefValue{SVector{2, T}}
-    final_icp::Base.RefValue{SVector{2, T}}
+    preferred_cops::Vector{Vec2{T}}
+    initial_icp::Base.RefValue{Vec2{T}}
+    final_icp::Base.RefValue{Vec2{T}}
     num_active_segments::Base.RefValue{Int}
 
     function ICPTrajectoryGenerator{T, M}(optimizer::O, num_segments::Integer) where {T, M, O<:MOI.AbstractOptimizer}
@@ -24,9 +24,9 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
         Δts = Parameter(model, val=zeros(T, n))
         ωs = Parameter(model, val=zeros(T, n))
         cop_polyhedra = Parameter(model, val=[zero(SHRep{M, 2, T, L}) for i = 1 : n])
-        preferred_cops = Parameter(model, val=[zero(SVector{2, T}) for i = 1 : n])
-        initial_icp = Parameter(model, val=zero(SVector{2, T}))
-        final_icp = Parameter(model, val=zero(SVector{2, T}))
+        preferred_cops = Parameter(model, val=[zero(Vec2{T}) for i = 1 : n])
+        initial_icp = Parameter(model, val=zero(Vec2{T}))
+        final_icp = Parameter(model, val=zero(Vec2{T}))
 
         # CoP bounds
         for i = 1 : n

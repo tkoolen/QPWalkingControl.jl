@@ -396,9 +396,9 @@ version = "0.2.1"
 
 [[Mustache]]
 deps = ["Printf", "Tables", "Test"]
-git-tree-sha1 = "9a548a873a8de9f982284817b89ae0c5faa5a80b"
+git-tree-sha1 = "3cc9a0b673519c5c39186e636d747facb12bf075"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
-version = "0.5.10"
+version = "0.5.11"
 
 [[Mux]]
 deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Lazy", "Pkg", "Sockets", "Test", "WebSockets"]
@@ -480,7 +480,7 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlanarConvexHulls]]
 deps = ["DocStringExtensions", "LinearAlgebra", "StaticArrays"]
-git-tree-sha1 = "71734d90206105e77b4bed3b33aa5ae54a959d58"
+git-tree-sha1 = "e29d99a7dc5d86d69ac8b1665571c1cf8ddd67bf"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/PlanarConvexHulls.jl.git"
 uuid = "145d500b-351c-58b3-a0aa-f5d7e249d989"
@@ -554,7 +554,7 @@ git-tree-sha1 = "e5456f8a78507fc6348d9a2fda94927cc93c41c8"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaRobotics/RigidBodySim.jl.git"
 uuid = "e61f16d8-a6b7-5689-8d03-627c2b27ebce"
-version = "1.0.0+"
+version = "1.1.0+"
 
 [[Roots]]
 deps = ["Compat", "Printf"]

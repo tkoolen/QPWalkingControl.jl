@@ -5,12 +5,12 @@ export
     ICPController,
     ICPTrajectoryGenerator,
     PushApplier,
-    PushRecoveryGUI,
-    Widget # from InteractBase
+    Widget, # from InteractBase
+    add_sole_frames!,
+    foot_polygons
 
 using LinearAlgebra
 using RigidBodyDynamics
-using RigidBodyDynamics.Graphs
 using RigidBodyDynamics.Contact
 using RigidBodyDynamics.PDControl
 using StaticArrays
@@ -18,25 +18,20 @@ using Rotations
 using QPControl
 using Parametron
 using PlanarConvexHulls
-
-import Observables
-import InteractBase
-import Blink
-import WebIO
 import MathOptInterface
-import RigidBodySim
 
-using InteractBase: button, slider, vbox, pad, px, Widget, style, container
-using Observables: Observable, observe
-using MeshCatMechanisms: MechanismVisualizer
+using RigidBodyDynamics.Graphs: TreePath, target
+using RigidBodyDynamics: frame_definition
 
 const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
-const FlexibleConvexHull{T} = ConvexHull{CCW, T, SVector{2, T}, Vector{SVector{2, T}}}
+const Vec2{T} = SVector{2, T}
 const SPoint3D{T} = Point3D{SVector{3, T}}
 
 include("util.jl")
+
+include("setup.jl")
 
 include("icpcontrol.jl")
 include("icptrajectory.jl")
@@ -45,5 +40,7 @@ include("controller.jl")
 
 include("pushapplier.jl")
 include("visualization.jl")
+
+using .Visualization
 
 end # module
