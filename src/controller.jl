@@ -101,7 +101,7 @@ end
 function update_active_contacts!(mode::ContactMode, contacts, state::MechanismState)
     for (body, contactpoints) in contacts
         bodyid = BodyID(body)
-        active_points_body = mode.active_points_body[bodyid]
+        active_points_body = mode.points_body[bodyid]
         empty!(active_points_body)
         for contactpoint in contactpoints
             if QPControl.isenabled(contactpoint)

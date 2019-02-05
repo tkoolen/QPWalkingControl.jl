@@ -24,8 +24,10 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 
 [extras]
+NBInclude = "0db19996-df87-5ea3-a455-e3a50d440464"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [targets]
-test = ["Test", "UnicodePlots"]
+test = ["NBInclude", "Test", "UnicodePlots", "Pkg"]
