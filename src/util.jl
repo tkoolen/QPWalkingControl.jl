@@ -1,14 +1,12 @@
-Base.@propagate_inbounds function horizontal_projection(v::AbstractVector)
-    @boundscheck length(v) == 3 || throw(ArgumentError())
-    SVector(v[1], v[2])
+function horizontal_projection(v::StaticVector{3})
+    @inbounds return SVector(v[1], v[2])
+end
+
+function horizontal_projection(r::RotMatrix{3})
+    @inbounds return RotMatrix(r[SVector(1, 2), SVector(1, 2)])
 end
 
 critically_damped_gains(k::Number) = PDGains(k, 2 * sqrt(k))
-
-function icp(c::Point3D, ċ::FreeVector3D, ω::Number)
-    @framecheck c.frame ċ.frame
-    c + ċ / ω
-end
 
 """
 ``A x \\le b``

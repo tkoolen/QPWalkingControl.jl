@@ -5,6 +5,7 @@ struct ICPController{T, I, Z}
     gz::T
     icptraj::I
     ztraj::Z
+    contactmode::PlanarContactMode{T}
 end
 
 function ICPController(mechanism::Mechanism{T}, icptraj, z_des::Number) where T
@@ -15,10 +16,15 @@ function ICPController(mechanism::Mechanism{T}, icptraj, z_des::Number) where T
         mass(mechanism),
         norm(mechanism.gravitational_acceleration),
         icptraj,
-        ztraj)
+        ztraj,
+        PlanarContactMode{T}(root_frame(mechanism))
+    )
 end
 
-function (controller::ICPController)(t, c::Point3D, cd::FreeVector3D, support_polygon::ConvexHull)
+function (controller::ICPController)(t, c::Point3D, cd::FreeVector3D, active_contact_points, state)
+    update!(controller.contactmode, active_contact_points, state)
+    support_polygon = controller.contactmode.hull
+
     # Equation (27) in "Design of a momentum-based control framework and application to the humanoid robot atlas"
     # minus the integral term.
     kxy = controller.kxy
