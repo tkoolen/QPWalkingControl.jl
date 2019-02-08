@@ -7,8 +7,11 @@ export
     PushApplier,
     Widget, # from InteractBase
     add_sole_frames!,
-    foot_polygons,
-    init_back_and_forth_shift!
+    make_foot_polygons,
+    transfer_weight!
+
+export
+    in_frame # consider moving to RBD.jl
 
 using LinearAlgebra
 using RigidBodyDynamics
@@ -32,6 +35,7 @@ const RBD = RigidBodyDynamics
 const Vec2{T} = SVector{2, T}
 const SPoint3D{T} = Point3D{SVector{3, T}}
 
+include("frames.jl")
 include("util.jl")
 
 include("setup.jl")

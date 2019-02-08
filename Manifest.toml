@@ -408,9 +408,9 @@ version = "0.5.3"
 
 [[NLSolversBase]]
 deps = ["Calculus", "DiffEqDiffTools", "DiffResults", "Distributed", "ForwardDiff", "LinearAlgebra", "Random", "SparseArrays", "Test"]
-git-tree-sha1 = "5a1d1b047ffb18eb72cc898245eaef3e2dd63762"
+git-tree-sha1 = "3d58d0970b04c545534c0e70f3d8f12fe429b5e6"
 uuid = "d41bc354-129a-5804-8e4c-c37616107c6c"
-version = "7.1.2"
+version = "7.2.0"
 
 [[NLsolve]]
 deps = ["DiffBase", "DiffEqDiffTools", "Distances", "ForwardDiff", "LineSearches", "LinearAlgebra", "NLSolversBase", "Printf", "Reexport", "SparseArrays", "Test"]
@@ -480,7 +480,7 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlanarConvexHulls]]
 deps = ["DocStringExtensions", "LinearAlgebra", "StaticArrays"]
-git-tree-sha1 = "e29d99a7dc5d86d69ac8b1665571c1cf8ddd67bf"
+git-tree-sha1 = "f7c3224aebd20106202232b75c05ff25ede81aa8"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/PlanarConvexHulls.jl.git"
 uuid = "145d500b-351c-58b3-a0aa-f5d7e249d989"

@@ -23,14 +23,15 @@ function add_sole_frames!(mechanism::Mechanism)
     soleframes
 end
 
-function foot_polygons(mechanism::Mechanism{T}, soleframes::AbstractDict{BodyID, CartesianFrame3D};
+function make_foot_polygons(mechanism::Mechanism{T}, soleframes::AbstractDict{BodyID, CartesianFrame3D};
         num_extreme_points::Int) where T
-    footpolygons = Dict{BodyID, SConvexHull{num_extreme_points, Float64}}()
+    footpolygons = Dict{BodyID, FrameAnnotated{SConvexHull{num_extreme_points, Float64}}}()
     for body in bodies(mechanism)
         bodypoints = RigidBodyDynamics.contact_points(body)
         if !isempty(bodypoints)
             bodyid = BodyID(body)
-            to_sole = inv(frame_definition(body, soleframes[bodyid]))
+            soleframe = soleframes[bodyid]
+            to_sole = inv(frame_definition(body, soleframe))
             projected_points = Vector{SVector{2, T}}(undef, length(bodypoints))
             for (i, point) in enumerate(bodypoints)
                 point_sole_frame = transform(location(point), to_sole)
@@ -40,7 +41,7 @@ function foot_polygons(mechanism::Mechanism{T}, soleframes::AbstractDict{BodyID,
             flexiblehull = DConvexHull{T}()
             jarvis_march!(flexiblehull, projected_points)
             @assert num_vertices(flexiblehull) == num_extreme_points
-            footpolygons[bodyid] = SConvexHull{num_extreme_points, T}(flexiblehull)
+            footpolygons[bodyid] = in_frame(soleframe, SConvexHull{num_extreme_points, T}(flexiblehull))
         end
     end
     footpolygons

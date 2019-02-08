@@ -11,28 +11,36 @@ critically_damped_gains(k::Number) = PDGains(k, 2 * sqrt(k))
 """
 ``A x \\le b``
 """
-struct SHRep{N, M, T, L}
-    A::SMatrix{N, M, T, L}
-    b::SVector{N, T}
+struct HRep{T, TA<:AbstractMatrix{T}, Tb<:AbstractVector{T}}
+    A::TA
+    b::Tb
 end
 
-function SHRep(hull::ConvexHull)
-    A, b = hrep(hull)
-    SHRep(A, b)
+function HRep(hull::ConvexHull)
+    HRep(hrep(hull)...)
 end
 
-function Base.zero(::Type{SHRep{N, M, T, L}}) where {N, M, T, L}
-    SHRep(zero(SMatrix{N, M, T, L}), zero(SVector{N, T}))
+function Base.:*(M::StaticMatrix, hrep::HRep)
+    HRep(M * hrep.A, M * hrep.b)
 end
 
-function Base.:*(M::StaticMatrix, hrep::SHRep)
-    SHRep(M * hrep.A, M * hrep.b)
+function Base.:+(hrep::HRep, c::StaticVector)
+    HRep(hrep.A, hrep.b + hrep.A * c)
 end
 
-function Base.:+(hrep::SHRep, c::StaticVector)
-    SHRep(hrep.A, hrep.b + hrep.A * c)
-end
-
-function Base.in(x::AbstractVector, hrep::SHRep)
+function Base.in(x::AbstractVector, hrep::HRep)
     all(hrep.A * x .<= hrep.b)
 end
+
+function RigidBodyDynamics.transform(fhull::FrameAnnotated{C}, tf::Transform3D) where C<:ConvexHull
+    @framecheck fhull.frame tf.from
+    R = horizontal_projection(rotation(tf))
+    p = horizontal_projection(translation(tf))
+    return in_frame(tf.to, C(map(x -> R * x + p, vertices(unwrap(fhull)))))
+end
+
+const SHRep{N, M, T, L} = HRep{T, SMatrix{N, M, T, L}, SVector{N, T}}
+const MHRep{N, M, T, L} = HRep{T, MMatrix{N, M, T, L}, MVector{N, T}}
+
+Base.zero(::Type{SHRep{N, M, T, L}}) where {N, M, T, L} = HRep(zero(SMatrix{N, M, T, L}), zero(SVector{N, T}))
+Base.zero(::Type{MHRep{N, M, T, L}}) where {N, M, T, L} = HRep(zero(MMatrix{N, M, T, L}), zero(MVector{N, T}))

@@ -1,18 +1,18 @@
-struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
+struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
     model::Model{T, O}
     cops::Vector{SVector{2, Variable}}
     icps::Vector{SVector{2, Variable}}
     Δts::Vector{T}
     ωs::Vector{T}
-    cop_polyhedra::Vector{SHRep{M, 2, T, L}}
+    cop_polyhedra::Vector{MHRep{N, 2, T, L}}
     preferred_cops::Vector{Vec2{T}}
     initial_icp::Base.RefValue{Vec2{T}}
     final_icp::Base.RefValue{Vec2{T}}
     num_active_segments::Base.RefValue{Int}
 
-    function ICPTrajectoryGenerator{T, M}(optimizer::O, num_segments::Integer) where {T, M, O<:MOI.AbstractOptimizer}
+    function ICPTrajectoryGenerator{T, N}(optimizer::O, num_segments::Integer) where {T, N, O<:MOI.AbstractOptimizer}
         n = num_segments
-        L = M * 2
+        L = N * 2
 
         model = Model(optimizer)
 
@@ -23,7 +23,7 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
         # Parameters
         Δts = Parameter(model, val=zeros(T, n))
         ωs = Parameter(model, val=zeros(T, n))
-        cop_polyhedra = Parameter(model, val=[zero(SHRep{M, 2, T, L}) for i = 1 : n])
+        cop_polyhedra = Parameter(model, val=[zero(MHRep{N, 2, T, L}) for i = 1 : n])
         preferred_cops = Parameter(model, val=[zero(Vec2{T}) for i = 1 : n])
         initial_icp = Parameter(model, val=zero(Vec2{T}))
         final_icp = Parameter(model, val=zero(Vec2{T}))
@@ -59,7 +59,7 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
 
         num_active_segments = Ref(0)
 
-        new{T, M, O, L}(
+        new{T, N, O, L}(
             model,
             cops, icps,
             Δts.val[], ωs.val[], cop_polyhedra.val[], preferred_cops.val[],
@@ -70,19 +70,28 @@ struct ICPTrajectoryGenerator{T, M, O<:MOI.AbstractOptimizer, L}
 end
 
 function Base.empty!(generator::ICPTrajectoryGenerator)
+    for hrep in generator.cop_polyhedra
+        hrep.A .= 0
+        hrep.b .= 0
+    end
     generator.Δts .= 0
     generator.num_active_segments[] = 0
     generator
 end
 
 function push_segment!(generator::ICPTrajectoryGenerator,
-        Δt::Number, ω::Number, cop_polyhedron::SHRep, preferred_cop::SVector)
+        Δt::Number, ω::Number, cop_polyhedron::Union{ConvexHull, HRep}, preferred_cop::SVector)
     i = generator.num_active_segments[] += 1
     @boundscheck i <= length(generator.Δts) || error()
     @inbounds begin
         generator.Δts[i] = Δt
         generator.ωs[i] = ω
-        generator.cop_polyhedra[i] = cop_polyhedron
+        if cop_polyhedron isa HRep
+            generator.cop_polyhedra[i] = cop_polyhedron
+        else
+            hrep = generator.cop_polyhedra[i]
+            hrep!(hrep.A, hrep.b, cop_polyhedron)
+        end
         generator.preferred_cops[i] = preferred_cop
     end
     generator
