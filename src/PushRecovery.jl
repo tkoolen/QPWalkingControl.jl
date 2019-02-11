@@ -6,6 +6,7 @@ export
     ICPTrajectoryGenerator,
     PushApplier,
     Widget, # from InteractBase
+    PushRecoveryVisualizer,
     add_sole_frames!,
     make_foot_polygons,
     icp,
@@ -48,12 +49,13 @@ include("planarcontactmode.jl")
 include("controller.jl")
 
 include("pushapplier.jl")
-include("visualization.jl")
 
 include("icp/icp.jl")
 include("icp/control.jl")
 include("icp/trajectory_gen.jl")
 include("icp/trajectory_init.jl")
+
+include("visualization.jl")
 
 using .Visualization
 

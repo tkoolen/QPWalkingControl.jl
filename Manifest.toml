@@ -359,9 +359,9 @@ version = "0.3.0"
 
 [[MechanismGeometries]]
 deps = ["ColorTypes", "Compat", "CoordinateTransformations", "FileIO", "GeometryTypes", "LightXML", "MeshIO", "Pkg", "RigidBodyDynamics", "Rotations", "StaticArrays"]
-git-tree-sha1 = "44b64f7b92f0b882d2d4d0f5a7262ee7f948d544"
+path = "/home/twan/.julia/dev/MechanismGeometries"
 uuid = "931e9471-e8fb-5385-a477-07ad12718aca"
-version = "0.1.2"
+version = "0.1.2+"
 
 [[MeshCat]]
 deps = ["AssetRegistry", "Base64", "BinDeps", "Colors", "CoordinateTransformations", "DocStringExtensions", "GeometryTypes", "JSExpr", "JSON", "Libdl", "LinearAlgebra", "MsgPack", "Mux", "Parameters", "Pkg", "Requires", "Rotations", "Sockets", "StaticArrays", "Test", "UUIDs", "WebIO"]
@@ -425,6 +425,12 @@ deps = ["Compat"]
 git-tree-sha1 = "ce3b85e484a5d4c71dd5316215069311135fa9f2"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "0.3.2"
+
+[[NamedColors]]
+deps = ["ColorTypes", "Colors", "REPL", "Test"]
+git-tree-sha1 = "4ff563d3f97c65405e51982b81e47f4a23651697"
+uuid = "51fcb6bd-ecd8-522c-95bc-4099d1d03463"
+version = "0.2.0"
 
 [[OSQP]]
 deps = ["BinDeps", "Compat", "Libdl", "MathOptInterface", "MathProgBase", "Random"]
@@ -552,9 +558,7 @@ version = "1.4.0+"
 
 [[RigidBodySim]]
 deps = ["Blink", "CSSUtil", "DataStructures", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "DocStringExtensions", "ForwardDiff", "InteractBase", "LinearAlgebra", "MeshCatMechanisms", "Observables", "OrdinaryDiffEq", "Printf", "Random", "RigidBodyDynamics", "Test", "WebIO"]
-git-tree-sha1 = "e5456f8a78507fc6348d9a2fda94927cc93c41c8"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaRobotics/RigidBodySim.jl.git"
+path = "/home/twan/.julia/dev/RigidBodySim"
 uuid = "e61f16d8-a6b7-5689-8d03-627c2b27ebce"
 version = "1.1.0+"
 

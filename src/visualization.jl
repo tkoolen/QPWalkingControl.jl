@@ -1,6 +1,13 @@
 module Visualization
 
-export Widget # from InteractBase
+export
+    Widget, # from InteractBase
+    PushRecoveryVisualizer
+
+using MeshCat
+using MeshCatMechanisms
+using CoordinateTransformations
+using NamedColors
 
 import Observables
 import InteractBase
@@ -8,9 +15,10 @@ import WebIO
 
 using InteractBase: button, slider, vbox, pad, px, Widget, style, container
 using Observables: Observable, observe
-using ..PushRecovery: PushApplier
-
-using RigidBodyDynamics: FreeVector3D
+using ..PushRecovery: PushApplier, icp
+using RigidBodyDynamics: FreeVector3D, MechanismState
+using MeshCat: Visualizer
+using GeometryTypes: HyperSphere, Point
 
 function InteractBase.Widget(controller::PushApplier; max_force::Number, max_Δt::Number)
     pushbutton = button("Apply push")
@@ -40,5 +48,28 @@ function InteractBase.Widget(controller::PushApplier; max_force::Number, max_Δt
         pad(10px, style(vbox(pushbutton, angleslider, magnitudeslider, timeslider), :fontFamily => "sans-serif", :fontSize => "10pt")),
     ), :width => "350px")
 end
+
+struct PushRecoveryVisualizer
+    mvis::MechanismVisualizer
+    icpvis::Visualizer
+end
+
+function PushRecoveryVisualizer(mvis::MechanismVisualizer)
+    state = MeshCatMechanisms.state(mvis)
+    vis = MeshCatMechanisms.visualizer(mvis)
+    icpvis = vis[:icp]
+    setobject!(icpvis, HyperSphere(Point(0., 0., 0.), 0.015), MeshPhongMaterial(color=colorant"greyish blue"))
+    PushRecoveryVisualizer(mvis, icpvis)
+end
+
+function Base.copyto!(vis::PushRecoveryVisualizer, state::Union{MechanismState, AbstractVector})
+    mvis = vis.mvis
+    copyto!(mvis, state)
+    settransform!(vis.icpvis, Translation(icp(MeshCatMechanisms.state(mvis)).v))
+end
+
+Base.wait(vis::PushRecoveryVisualizer) = Base.wait(vis.mvis)
+
+MeshCatMechanisms.visualizer(vis::PushRecoveryVisualizer) = MeshCatMechanisms.visualizer(vis.mvis)
 
 end # module
