@@ -1,23 +1,24 @@
-struct FrameAnnotated{T}
+struct Framed{T}
     frame::CartesianFrame3D
     val::T
 end
 
-function Base.show(io::IO, x::FrameAnnotated)
+function Base.show(io::IO, x::Framed)
     print(io, x.val)
     print(io, " (in frame: $(x.frame))")
 end
 
-in_frame(frame::CartesianFrame3D, val) = FrameAnnotated(frame, val)
+in_frame(frame::CartesianFrame3D, val) = Framed(frame, val)
+in_frame(::Nothing, val) = val
 
+unwrap(x::Framed) = x.val
 unwrap(x) = x
-unwrap(x::FrameAnnotated) = x.val
 
 @inline function same_frame(args::Tuple, frame::Union{Missing, CartesianFrame3D}=missing)
     isempty(args) && return frame
     head = args[1]
     tail = Base.tail(args)
-    if head isa FrameAnnotated
+    if head isa Framed
         if frame !== missing && head.frame !== frame
             throw(ArgumentError("Frame mismatch.")) # TODO: nicer message
         end

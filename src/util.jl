@@ -32,7 +32,7 @@ function Base.in(x::AbstractVector, hrep::HRep)
     all(hrep.A * x .<= hrep.b)
 end
 
-function RigidBodyDynamics.transform(fhull::FrameAnnotated{C}, tf::Transform3D) where C<:ConvexHull
+function RigidBodyDynamics.transform(fhull::Framed{C}, tf::Transform3D) where C<:ConvexHull
     @framecheck fhull.frame tf.from
     R = horizontal_projection(rotation(tf))
     p = horizontal_projection(translation(tf))

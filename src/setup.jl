@@ -25,7 +25,7 @@ end
 
 function make_foot_polygons(mechanism::Mechanism{T}, soleframes::AbstractDict{BodyID, CartesianFrame3D};
         num_extreme_points::Int) where T
-    footpolygons = Dict{BodyID, FrameAnnotated{SConvexHull{num_extreme_points, Float64}}}()
+    footpolygons = Dict{BodyID, Framed{SConvexHull{num_extreme_points, Float64}}}()
     for body in bodies(mechanism)
         bodypoints = RigidBodyDynamics.contact_points(body)
         if !isempty(bodypoints)

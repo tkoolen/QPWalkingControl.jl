@@ -1,6 +1,6 @@
 function transfer_weight!(
         generator::ICPTrajectoryGenerator{T}, state::MechanismState,
-        foot_polygons::AbstractDict{BodyID, <:FrameAnnotated{<:ConvexHull}}, bodyid::BodyID;
+        foot_polygons::AbstractDict{BodyID, <:Framed{<:ConvexHull}}, bodyid::BodyID;
         Δt::Number, ω::Number) where {T}
     foot_polygons_world = typeof(foot_polygons)()
     contactmode = PlanarContactMode{T}(root_frame(state.mechanism))
