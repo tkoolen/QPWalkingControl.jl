@@ -1,3 +1,5 @@
+# This file is machine-generated - editing it directly is not advised
+
 [[ArrayInterface]]
 deps = ["Requires", "Test"]
 git-tree-sha1 = "6a1a371393e56f5e8d5657fe4da4b11aea0bfbae"
@@ -107,9 +109,9 @@ version = "0.3.2"
 
 [[DiffEqBase]]
 deps = ["Compat", "IteratorInterfaceExtensions", "LinearAlgebra", "RecipesBase", "RecursiveArrayTools", "Requires", "Roots", "SparseArrays", "StaticArrays", "Statistics", "SuiteSparse", "TableTraits", "Test", "TreeViews"]
-git-tree-sha1 = "f52b84dd3224bca7829f5d5d04560409d3f91b40"
+git-tree-sha1 = "62970db3b264e93c6decf6ee082c9875e8003bb8"
 uuid = "2b5f629d-d688-5b77-993f-72d75c75574e"
-version = "5.0.1"
+version = "5.2.0"
 
 [[DiffEqCallbacks]]
 deps = ["DataStructures", "DiffEqBase", "LinearAlgebra", "OrdinaryDiffEq", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Test"]
@@ -119,9 +121,9 @@ version = "2.5.2"
 
 [[DiffEqDiffTools]]
 deps = ["LinearAlgebra", "Test"]
-git-tree-sha1 = "67700c9fc82033ec68a145bc650f6b9debdf9103"
+git-tree-sha1 = "4b21dd83c341412a0607334ac64bb5593a4bd583"
 uuid = "01453d9d-ee7c-5054-8395-0335cb756afa"
-version = "0.7.1"
+version = "0.8.0"
 
 [[DiffEqOperators]]
 deps = ["DiffEqBase", "LinearAlgebra", "Random", "SparseArrays", "StaticArrays", "Test"]
@@ -148,7 +150,7 @@ uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 version = "0.7.4"
 
 [[Distributed]]
-deps = ["LinearAlgebra", "Random", "Serialization", "Sockets"]
+deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[DocStringExtensions]]
@@ -245,7 +247,7 @@ uuid = "7981ab7d-5bfa-5e03-9ec9-f3d4afc0a1ca"
 version = "0.4.2"
 
 [[InteractiveUtils]]
-deps = ["LinearAlgebra", "Markdown"]
+deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[Interpolations]]
@@ -450,9 +452,9 @@ version = "1.0.2"
 
 [[OrdinaryDiffEq]]
 deps = ["DataStructures", "DiffEqBase", "DiffEqDiffTools", "DiffEqOperators", "ExponentialUtilities", "ForwardDiff", "GenericSVD", "InteractiveUtils", "LinearAlgebra", "Logging", "MuladdMacro", "NLsolve", "Parameters", "Printf", "Random", "RecursiveArrayTools", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "40573add967c3e973bbad28e20f7bdb36af7b1ca"
+git-tree-sha1 = "2b25ecdafa1b16858ecb5e37c158af0d77ac4616"
 uuid = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-version = "5.0.0"
+version = "5.1.0"
 
 [[Parameters]]
 deps = ["Markdown", "OrderedCollections", "REPL", "Test"]
@@ -496,7 +498,7 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "4c2fc28d57cd7a0c3726303468fc713e29f891f6"
+git-tree-sha1 = "3127062685f0afcd24772fd756499730c103351f"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"
@@ -542,11 +544,11 @@ version = "0.5.2"
 
 [[RigidBodyDynamics]]
 deps = ["DocStringExtensions", "LightXML", "LinearAlgebra", "LoopThrottle", "Profile", "Random", "Reexport", "Rotations", "SparseArrays", "StaticArrays", "Test", "TypeSortedCollections", "UnsafeArrays"]
-git-tree-sha1 = "5070e0c8f1467fc6b921600726e58b16c97f4c0f"
+git-tree-sha1 = "ccefc0d7c686fdc2bfc4f8c9b2ae80d0d1bec0c3"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaRobotics/RigidBodyDynamics.jl.git"
 uuid = "366cf18f-59d5-5db9-a4de-86a9f6786172"
-version = "1.3.0+"
+version = "1.4.0+"
 
 [[RigidBodySim]]
 deps = ["Blink", "CSSUtil", "DataStructures", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "DocStringExtensions", "ForwardDiff", "InteractBase", "LinearAlgebra", "MeshCatMechanisms", "Observables", "OrdinaryDiffEq", "Printf", "Random", "RigidBodyDynamics", "Test", "WebIO"]
@@ -564,9 +566,9 @@ version = "0.7.4"
 
 [[Rotations]]
 deps = ["LinearAlgebra", "Random", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "ffcdd81d77b333ad0507aa4d021f61a461b6681d"
+git-tree-sha1 = "dfb3ceb177a59f25fee4e2f26c1aeb92b73d3a0e"
 uuid = "6038ab10-8711-5258-84ad-4b1120ba62dc"
-version = "0.10.0"
+version = "0.11.1"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -646,7 +648,7 @@ uuid = "30578b45-9adc-5946-b283-645ec420af67"
 version = "0.4.0"
 
 [[UUIDs]]
-deps = ["Random"]
+deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [[Unicode]]

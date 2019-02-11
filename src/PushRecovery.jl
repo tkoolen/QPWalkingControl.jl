@@ -8,10 +8,15 @@ export
     Widget, # from InteractBase
     add_sole_frames!,
     make_foot_polygons,
+    icp,
+    horizontal_projection,
     transfer_weight!
 
+# consider moving to RBD.jl
 export
-    in_frame # consider moving to RBD.jl
+    in_frame,
+    @framechecked,
+    unwrap
 
 using LinearAlgebra
 using RigidBodyDynamics
