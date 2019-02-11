@@ -26,7 +26,7 @@ function PushRecoveryController(
         linear_momentum_controller;
         joint_regularization::Float64 = 0.05,
         linear_momentum_weight::Float64 = 1.0,
-        pelvisgains::PDGains = PDGains(20., 2 * sqrt(20.0)),
+        pelvisgains::PDGains = critically_damped_gains(100.0),
         jointgains = Dict(JointID(j) => PDGains(100.0, 20.) for j in tree_joints(lowlevel.state.mechanism)),
         comref::Point3D = center_of_mass(nominalstate) - FreeVector3D(root_frame(lowlevel.state.mechanism), 0., 0., 0.05),
         jointrefs = Dict(JointID(j) => configuration(nominalstate, j)[1] for j in tree_joints(lowlevel.state.mechanism) if joint_type(j) isa Revolute))
@@ -50,7 +50,7 @@ function PushRecoveryController(
     revolutejoints = filter(j -> joint_type(j) isa Revolute, tree_joints(mechanism))
     positioncontroljoints = setdiff(revolutejoints, vcat((collect(task.path) for task in values(foottasks))...))
     jointtasks = Dict(JointID(j) => JointAccelerationTask(j) for j in positioncontroljoints)
-    addtask!.(Ref(lowlevel), collect(values(jointtasks)), 1.0)
+    addtask!.(Ref(lowlevel), collect(values(jointtasks)), 10.0)
 
     active_contact_points = Dict{BodyID, Vector{SPoint3D{Float64}}}()
 
