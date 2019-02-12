@@ -109,9 +109,9 @@ version = "0.3.2"
 
 [[DiffEqBase]]
 deps = ["Compat", "IteratorInterfaceExtensions", "LinearAlgebra", "RecipesBase", "RecursiveArrayTools", "Requires", "Roots", "SparseArrays", "StaticArrays", "Statistics", "SuiteSparse", "TableTraits", "Test", "TreeViews"]
-git-tree-sha1 = "62970db3b264e93c6decf6ee082c9875e8003bb8"
+git-tree-sha1 = "cd1f12b447ef3be91a4d061d3bb1d6459a978a78"
 uuid = "2b5f629d-d688-5b77-993f-72d75c75574e"
-version = "5.2.0"
+version = "5.2.2"
 
 [[DiffEqCallbacks]]
 deps = ["DataStructures", "DiffEqBase", "LinearAlgebra", "OrdinaryDiffEq", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Test"]
@@ -359,7 +359,9 @@ version = "0.3.0"
 
 [[MechanismGeometries]]
 deps = ["ColorTypes", "Compat", "CoordinateTransformations", "FileIO", "GeometryTypes", "LightXML", "MeshIO", "Pkg", "RigidBodyDynamics", "Rotations", "StaticArrays"]
-path = "/home/twan/.julia/dev/MechanismGeometries"
+git-tree-sha1 = "4cb17815cc67a9538a921455f213866f891c02b1"
+repo-rev = "tk/link_colors"
+repo-url = "https://github.com/JuliaRobotics/MechanismGeometries.jl.git"
 uuid = "931e9471-e8fb-5385-a477-07ad12718aca"
 version = "0.1.2+"
 
@@ -470,9 +472,9 @@ version = "0.10.3"
 
 [[Parametron]]
 deps = ["DocStringExtensions", "FunctionWrappers", "LinearAlgebra", "MacroTools", "MathOptInterface", "Random", "Test"]
-path = "/home/twan/.julia/dev/Parametron"
+git-tree-sha1 = "914c97ead07a87e7b3ffa49c19ba2e68647c2e55"
 uuid = "41fac6d6-0ffa-5bcc-b863-17dd4947be41"
-version = "0.6.0+"
+version = "0.7.0"
 
 [[Pidfile]]
 deps = ["FileWatching", "Test"]
@@ -548,7 +550,7 @@ version = "0.5.2"
 
 [[RigidBodyDynamics]]
 deps = ["DocStringExtensions", "LightXML", "LinearAlgebra", "LoopThrottle", "Profile", "Random", "Reexport", "Rotations", "SparseArrays", "StaticArrays", "Test", "TypeSortedCollections", "UnsafeArrays"]
-git-tree-sha1 = "ccefc0d7c686fdc2bfc4f8c9b2ae80d0d1bec0c3"
+git-tree-sha1 = "44bfd0622210e9803d3f8f7180d8078a033304b1"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaRobotics/RigidBodyDynamics.jl.git"
 uuid = "366cf18f-59d5-5db9-a4de-86a9f6786172"
@@ -556,7 +558,9 @@ version = "1.4.0+"
 
 [[RigidBodySim]]
 deps = ["Blink", "CSSUtil", "DataStructures", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "DocStringExtensions", "ForwardDiff", "InteractBase", "LinearAlgebra", "MeshCatMechanisms", "Observables", "OrdinaryDiffEq", "Printf", "Random", "RigidBodyDynamics", "Test", "WebIO"]
-path = "/home/twan/.julia/dev/RigidBodySim"
+git-tree-sha1 = "c39b0bdba06b128695a7313000e35e156b3bede9"
+repo-rev = "tk/widen-vis"
+repo-url = "https://github.com/JuliaRobotics/RigidBodySim.jl.git"
 uuid = "e61f16d8-a6b7-5689-8d03-627c2b27ebce"
 version = "1.1.0+"
 
@@ -603,9 +607,9 @@ version = "0.10.2"
 
 [[StaticUnivariatePolynomials]]
 deps = ["Test"]
-git-tree-sha1 = "5998b176e48a74a9017d1e4916a60544a9ce79c8"
+git-tree-sha1 = "3be2f4c4bdb422f495b6e4fb5a67d094b42b12d3"
 uuid = "6f584044-cad5-5b68-a429-1e244a824f76"
-version = "0.2.0"
+version = "0.3.0"
 
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
