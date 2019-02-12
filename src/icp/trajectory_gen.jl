@@ -1,3 +1,17 @@
+@inline function exponential_integral(B::BezierCurve{N}, c, t, inv_c = inv(c), exp_c_t = exp(c * t)) where N
+    p0 = B.points[1]
+    if N == 1
+        return inv_c * p0 * (exp_c_t - 1)
+    else
+        return inv_c * (B(t) * exp_c_t - p0 - exponential_integral(derivative(B), c, t, inv_c, exp_c_t))
+    end
+end
+
+function integrate_icp(ξ0, p::BezierCurve, ω, t)
+    exp_ω_t = exp(ω * t)
+    return ξ0 * exp_ω_t - ω * exp_ω_t * exponential_integral(p, -ω, t)
+end
+
 struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
     model::Model{T, O}
     cops::Vector{SVector{2, Variable}}
