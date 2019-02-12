@@ -2,7 +2,8 @@ module BezierCurves
 
 export
     BezierCurve,
-    derivative
+    derivative,
+    exponential_integral
 
 import StaticUnivariatePolynomials
 
@@ -28,6 +29,37 @@ end
     points = b.points
     n = N - 1
     BezierCurve(ntuple(i -> n * (points[i + 1] - points[i]), n))
+end
+
+"""
+```math
+\\int_{0}^{t} b\\left(\\tau\\right) e^{c \\tau} d\\tau
+```
+
+Found using integration by parts.
+"""
+@inline function exponential_integral(b::BezierCurve{N}, c, t; inv_c = inv(c), exp_c_t=exp(c * t)) where N
+    p0 = b.points[1]
+    if N === 1
+        return inv_c * p0 * (exp_c_t - 1)
+    else
+        return inv_c * (b(t) * exp_c_t - p0 - exponential_integral(derivative(b), c, t; inv_c=inv_c, exp_c_t=exp_c_t))
+    end
+end
+
+"""
+```math
+\\int_{0}^{1} b\\left(\\tau\\right) e^{c \\tau} d\\tau
+```
+"""
+@inline function exponential_integral(b::BezierCurve{N}, c; inv_c=inv(c), exp_c=exp(c)) where N
+    p0 = b.points[1]
+    pn = b.points[N]
+    if N === 1
+        return inv_c * p0 * (exp_c - 1)
+    else
+        return inv_c * (pn * exp_c - p0 - exponential_integral(derivative(b), c, inv_c=inv_c, exp_c=exp_c))
+    end
 end
 
 end # module
