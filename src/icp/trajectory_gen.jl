@@ -143,7 +143,6 @@ end
 
 function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
     t < 0 && throw(ArgumentError("Cannot evaluate at a negative time."))
-
     if t < sum(generator.Δts)
         # Find segment index and segment start time
         i, t0 = find_segment(generator, t)
@@ -163,6 +162,5 @@ function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
         ξ = generator.final_icp[]
         ξd = zero(ξ)
     end
-
     ξ, ξd
 end

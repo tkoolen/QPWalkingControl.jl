@@ -29,12 +29,14 @@ using QPControl
 using QPControl.Trajectories
 using Parametron
 using PlanarConvexHulls
+using StaticUnivariatePolynomials
 import MathOptInterface
 
 using Base.Iterators: cycle
 using RigidBodyDynamics.Graphs: TreePath, target
 using RigidBodyDynamics: frame_definition
 
+const SUP = StaticUnivariatePolynomials
 const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
@@ -43,12 +45,15 @@ const SPoint3D{T} = Point3D{SVector{3, T}}
 
 include("frames.jl")
 include("util.jl")
+include("bezier.jl")
 
 include("setup.jl")
 include("planarcontactmode.jl")
 include("controller.jl")
 
 include("pushapplier.jl")
+
+using .BezierCurves
 
 include("icp/icp.jl")
 include("icp/control.jl")

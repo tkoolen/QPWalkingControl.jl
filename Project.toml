@@ -25,10 +25,15 @@ RigidBodyDynamics = "366cf18f-59d5-5db9-a4de-86a9f6786172"
 RigidBodySim = "e61f16d8-a6b7-5689-8d03-627c2b27ebce"
 Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StaticUnivariatePolynomials = "6f584044-cad5-5b68-a429-1e244a824f76"
 WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 
 [extras]
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 NBInclude = "0db19996-df87-5ea3-a455-e3a50d440464"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
+
+[targets]
+test = ["NBInclude", "Pkg", "Test", "UnicodePlots", "ForwardDiff"]

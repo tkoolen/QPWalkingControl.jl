@@ -470,9 +470,7 @@ version = "0.10.3"
 
 [[Parametron]]
 deps = ["DocStringExtensions", "FunctionWrappers", "LinearAlgebra", "MacroTools", "MathOptInterface", "Random", "Test"]
-git-tree-sha1 = "26bebf9b4c18ef1b997ab5a312aa388f67b33e35"
-repo-rev = "master"
-repo-url = "https://github.com/tkoolen/Parametron.jl.git"
+path = "/home/twan/.julia/dev/Parametron"
 uuid = "41fac6d6-0ffa-5bcc-b863-17dd4947be41"
 version = "0.6.0+"
 
