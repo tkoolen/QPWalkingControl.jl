@@ -7,15 +7,29 @@ using OSQP
 using OSQP.MathOptInterfaceOSQP
 using Test
 using Random
+using ForwardDiff
 using LinearAlgebra
 using PlanarConvexHulls
+using PushRecovery.BezierCurves
 
 const MOI = MathOptInterface
 
+using PushRecovery: integrate_icp
 import PushRecovery: ICPTrajectoryGenerator, push_segment!, solve!, initial_icp, cop, find_segment
 import PushRecovery: SHRep
 
 using UnicodePlots
+
+@testset "integrate_icp" begin
+    ξ0 = 1.0
+    p = BezierCurve(1, 2, 3, 4)
+    ω = 3.0
+    for t in range(0.0, 1.0, length=10)
+        ξ = integrate_icp(ξ0, p, ω, t)
+        ξd = ForwardDiff.derivative(t -> integrate_icp(ξ0, p, ω, t), t)
+        @test ξd ≈ ω * (ξ - p(t))
+    end
+end
 
 function optimizer()
     optimizer = OSQP.Optimizer()
