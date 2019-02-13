@@ -73,7 +73,7 @@ end
     for num_active_segments in 1 : 1
         empty!(generator)
         for i = 1 : num_active_segments
-            push_segment!(generator, Δt, foot_polygon_hrep + foot_centers[i])
+            push_segment!(generator, Δt, foot_polygon_hrep + foot_centers[i], foot_centers[i])
         end
         generator.initial_icp[] = foot_centers[1] + SVector(0.02, 0.01)
         generator.final_icp[] = foot_centers[num_active_segments]

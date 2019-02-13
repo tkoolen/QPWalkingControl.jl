@@ -12,7 +12,7 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
     icp_knots::Vector{SVector{2, Variable}}
     Δts::Vector{T}
     cop_polyhedra::Vector{MHRep{N, 2, T, L}}
-    # preferred_cops::Vector{Vec2{T}}
+    preferred_cops::Vector{Vec2{T}}
     initial_icp::Base.RefValue{Vec2{T}}
     final_icp::Base.RefValue{Vec2{T}}
     num_active_segments::Base.RefValue{Int}
@@ -40,7 +40,7 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         # Parameters
         Δts = Parameter(model, val=zeros(T, n))
         cop_polyhedra = Parameter(model, val=[zero(MHRep{N, 2, T, L}) for i = 1 : n])
-        # preferred_cops = Parameter(model, val=[zero(Vec2{T}) for i = 1 : n])
+        preferred_cops = Parameter(model, val=[zero(Vec2{T}) for i = 1 : n])
         initial_icp = Parameter(model, val=zero(Vec2{T}))
         final_icp = Parameter(model, val=zero(Vec2{T}))
 
@@ -81,19 +81,13 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         @constraint model last(last(cop_pieces).points) == final_icp # implies that final ICP velocity is zero
 
         # Objective
-        # objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
-        # for i = 1 : n
-        #     pᵢ = cop_pieces[i]
-        #     for point in pᵢ.points
-        #         objective = @expression objective + point ⋅ point
-        #     end
-        # end
-        # @objective model Minimize objective
-        # for i = 1 : n
-        #     e = @expression cops[i] - preferred_cops[i]
-        #     objective = @expression objective + e ⋅ e
-        # end
-        # @objective model Minimize objective
+        objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
+        for i = 1 : n
+            pᵢ = cop_pieces[i]
+            e = @expression pᵢ(0.5) - preferred_cops[i]
+            objective = @expression objective + e ⋅ e
+        end
+        @objective model Minimize objective
 
         num_active_segments = Ref(0)
 
@@ -101,7 +95,7 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
             ω,
             model,
             cop_pieces, icp_knots,
-            Δts.val[], cop_polyhedra.val[], #preferred_cops.val[],
+            Δts.val[], cop_polyhedra.val[], preferred_cops.val[],
             initial_icp.val, final_icp.val,
             num_active_segments
         )
@@ -119,7 +113,7 @@ function Base.empty!(generator::ICPTrajectoryGenerator)
 end
 
 function push_segment!(generator::ICPTrajectoryGenerator,
-        Δt::Number, cop_polyhedron::Union{ConvexHull, HRep})#, preferred_cop::SVector)
+        Δt::Number, cop_polyhedron::Union{ConvexHull, HRep}, preferred_cop::SVector)
     i = generator.num_active_segments[] += 1
     @boundscheck i <= length(generator.Δts) || error()
     @inbounds begin
@@ -131,7 +125,7 @@ function push_segment!(generator::ICPTrajectoryGenerator,
         else
             hrep!(hrep.A, hrep.b, cop_polyhedron)
         end
-        # generator.preferred_cops[i] = preferred_cop
+        generator.preferred_cops[i] = preferred_cop
     end
     generator
 end
