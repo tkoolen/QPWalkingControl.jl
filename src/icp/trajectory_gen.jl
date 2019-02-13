@@ -18,10 +18,6 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
     num_active_segments::Base.RefValue{Int}
 
     function ICPTrajectoryGenerator{T, N}(optimizer::O, num_segments::Integer, ω::Number) where {T, N, O<:MOI.AbstractOptimizer}
-        # TODO:
-        # * objective function: sum of squared differences between preferred CoPs and middle control points? Or CoP evaluated at t = Delta t / 2?
-        # * switch to quadratic Bezier curves for CoP segments?
-
         # Variables: (COP_TRAJ_DEGREE + 5) * n + 2:
         # * CoP control points: 2 * (COP_TRAJ_DEGREE + 1) * n
         # * ICP knots: 2 * (n + 1)
@@ -84,8 +80,10 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
         for i = 1 : n
             pᵢ = cop_pieces[i]
-            e = @expression pᵢ(0.5) - preferred_cops[i]
-            objective = @expression objective + e ⋅ e
+            for point in pᵢ.points
+                e = @expression point - preferred_cops[i]
+                objective = @expression objective + e ⋅ e
+            end
         end
         @objective model Minimize objective
 
@@ -133,6 +131,7 @@ end
 function solve!(generator::ICPTrajectoryGenerator)
     Parametron.solve!(generator.model)
     checkstatus(generator.model)
+    @show cop_piece(generator, 1)
 end
 
 function checkstatus(model::Parametron.Model)
@@ -151,11 +150,11 @@ function checkstatus(model::Parametron.Model)
 end
 
 function initial_icp(generator::ICPTrajectoryGenerator, segment_number::Integer)
-    value.(generator.model, generator.icps[segment_number])
+    value.(generator.model, generator.icp_knots[segment_number])
 end
 
-function cop(generator::ICPTrajectoryGenerator, segment_number::Integer)
-    value.(generator.model, generator.cops[segment_number])
+function cop_piece(generator::ICPTrajectoryGenerator, segment_number::Integer)
+    BezierCurve(map(x -> value.(generator.model, x), generator.cop_pieces[segment_number].points))
 end
 
 final_time(generator::ICPTrajectoryGenerator) = sum(generator.Δts)
@@ -175,27 +174,29 @@ function find_segment(generator::ICPTrajectoryGenerator{T}, t::Number) where T
 end
 
 function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
-    # TODO: reimplement
+    t < 0 && throw(ArgumentError("Cannot evaluate at a negative time."))
+    if t < sum(generator.Δts)
+        # Find segment index and segment start time
+        i, t0 = find_segment(generator, t)
 
-#     t < 0 && throw(ArgumentError("Cannot evaluate at a negative time."))
-#     if t < sum(generator.Δts)
-#         # Find segment index and segment start time
-#         i, t0 = find_segment(generator, t)
+        # Segment phase
+        θ = (t - t0) / generator.Δts[i]
 
-#         # Use (13) in Capturability-based Analysis Part 1 to find ICP ξ
-#         ξ0 = initial_icp(generator, i)
-#         p = cop(generator, i)
-#         Δt = t - t0
-#         ω = generator.ωs[i]
-#         w = exp(ω * Δt)
-#         ξ = w * ξ0 + (1 - w) * p
+        # CoP
+        pᵢ = cop_piece(generator, i)
+        p = pᵢ(θ)
 
-#         # Use (12) in Capturability-based Analysis Part 1 to find ICP time derivative ξd
-#         ξd = ω * (ξ - p)
-#     else
-#         # Hold at the final ICP
-#         ξ = generator.final_icp[]
-#         ξd = zero(ξ)
-#     end
-#     ξ, ξd
+        # ICP
+        ω = generator.ω
+        ξ0 = initial_icp(generator, i)
+        ξ = integrate_icp(ξ0, pᵢ, ω, θ)
+
+        # Use (12) in Capturability-based Analysis Part 1 to find ICP time derivative ξd
+        ξd = ω * (ξ - p)
+    else
+        # Hold at the final ICP
+        ξ = generator.final_icp[]
+        ξd = zero(ξ)
+    end
+    ξ, ξd
 end
