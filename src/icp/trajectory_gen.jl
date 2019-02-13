@@ -13,21 +13,26 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
     Δts::Vector{T}
     cop_polyhedra::Vector{MHRep{N, 2, T, L}}
     preferred_cops::Vector{Vec2{T}}
+    initial_cop::Base.RefValue{Vec2{T}}
     initial_icp::Base.RefValue{Vec2{T}}
     final_icp::Base.RefValue{Vec2{T}}
     num_active_segments::Base.RefValue{Int}
 
     function ICPTrajectoryGenerator{T, N}(optimizer::O, num_segments::Integer, ω::Number) where {T, N, O<:MOI.AbstractOptimizer}
+        # TODO:
+        # * find the right objective function
+
         # Variables: (COP_TRAJ_DEGREE + 5) * n + 2:
         # * CoP control points: 2 * (COP_TRAJ_DEGREE + 1) * n
         # * ICP knots: 2 * (n + 1)
-        # Equality constraints: 6 * n + 2:
-        # * C⁰ continuity: 2 * (n - 1)
-        # * C¹ continuity: 2 * (n - 1)
+        # Equality constraints: 6 * n + 4:
+        # * initial CoP: 2
+        # * CoP C⁰ continuity: 2 * (n - 1)
+        # * CoP C¹ continuity: 2 * (n - 1)
         # * ICP dynamics: 2 * n
         # * initial ICP: 2
         # * final ICP: 2
-        # * final ICP == final CoP: 2
+        # * final CoP == final ICP: 2
 
         n = num_segments
         L = N * 2
@@ -37,13 +42,17 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         Δts = Parameter(model, val=zeros(T, n))
         cop_polyhedra = Parameter(model, val=[zero(MHRep{N, 2, T, L}) for i = 1 : n])
         preferred_cops = Parameter(model, val=[zero(Vec2{T}) for i = 1 : n])
+        initial_cop = Parameter(model, val=zero(Vec2{T}))
         initial_icp = Parameter(model, val=zero(Vec2{T}))
         final_icp = Parameter(model, val=zero(Vec2{T}))
 
         # CoP trajectory
         cop_pieces = [BezierCurve(ntuple(i -> SVector(Variable(model), Variable(model)), Val(COP_TRAJ_DEGREE + 1))) for i = 1 : n]
 
-        # Continuity for CoP trajectory
+        # Initial CoP
+        @constraint model first(first(cop_pieces).points) == initial_cop
+
+        # CoP trajectory continuity
         for i = 1 : n - 1
             # C⁰
             pᵢ = cop_pieces[i]
@@ -77,15 +86,15 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         @constraint model last(last(cop_pieces).points) == final_icp # implies that final ICP velocity is zero
 
         # Objective
-        objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
-        for i = 1 : n
-            pᵢ = cop_pieces[i]
-            for point in pᵢ.points
-                e = @expression point - preferred_cops[i]
-                objective = @expression objective + e ⋅ e
-            end
-        end
-        @objective model Minimize objective
+        # objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
+        # for i = 1 : n
+        #     pᵢ = cop_pieces[i]
+        #     for point in pᵢ.points
+        #         e = @expression point - preferred_cops[i]
+        #         objective = @expression objective + e ⋅ e
+        #     end
+        # end
+        # @objective model Minimize objective
 
         num_active_segments = Ref(0)
 
@@ -94,7 +103,7 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
             model,
             cop_pieces, icp_knots,
             Δts.val[], cop_polyhedra.val[], preferred_cops.val[],
-            initial_icp.val, final_icp.val,
+            initial_cop.val, initial_icp.val, final_icp.val,
             num_active_segments
         )
     end
@@ -131,7 +140,6 @@ end
 function solve!(generator::ICPTrajectoryGenerator)
     Parametron.solve!(generator.model)
     checkstatus(generator.model)
-    @show cop_piece(generator, 1)
 end
 
 function checkstatus(model::Parametron.Model)
@@ -191,7 +199,7 @@ function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
         ξ0 = initial_icp(generator, i)
         ξ = integrate_icp(ξ0, pᵢ, ω, θ)
 
-        # Use (12) in Capturability-based Analysis Part 1 to find ICP time derivative ξd
+        # ICP derivative. Use (12) in Capturability-based Analysis Part 1.
         ξd = ω * (ξ - p)
     else
         # Hold at the final ICP

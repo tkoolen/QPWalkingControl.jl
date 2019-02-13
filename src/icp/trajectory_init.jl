@@ -16,7 +16,9 @@ function transfer_weight!(
     desired_icp = @framechecked centroid(foot_polygon_world)
     @framecheck desired_icp.frame contactmode.frame
     empty!(generator)
-    generator.initial_icp[] = horizontal_projection(icp(state, generator.ω).v)
+    ξ0 = horizontal_projection(icp(state, generator.ω).v)
+    generator.initial_cop[] = ξ0
+    generator.initial_icp[] = ξ0
     generator.final_icp[] = unwrap(desired_icp)
     push_segment!(generator, Δt, contactmode.hull, unwrap(desired_icp))
     solve!(generator)
