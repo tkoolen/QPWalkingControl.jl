@@ -3,7 +3,8 @@ struct PushRecoveryController{M<:MomentumBasedController, L}
     robotmass::Float64
     gravitymag::Float64
 
-    foottasks::Dict{RigidBody{Float64}, SpatialAccelerationTask}
+    foot_angular_tasks::Dict{BodyID, AngularAccelerationTask}
+    foot_linear_tasks::Dict{BodyID, LinearAccelerationTask}
     linmomtask::LinearMomentumRateTask
     pelvistask::AngularAccelerationTask
     jointtasks::Dict{JointID, JointAccelerationTask{Revolute{Float64}}}
@@ -38,8 +39,13 @@ function PushRecoveryController(
 
     regularize!.(Ref(lowlevel), tree_joints(mechanism), joint_regularization)
 
-    foottasks = Dict(foot => SpatialAccelerationTask(mechanism, path(mechanism, world, foot)) for foot in feet)
-    addtask!.(Ref(lowlevel), collect(values(foottasks)))
+    foot_paths = Dict(BodyID(foot) => path(mechanism, world, foot) for foot in feet)
+
+    foot_angular_tasks = Dict(BodyID(foot) => AngularAccelerationTask(mechanism, foot_paths[BodyID(foot)]) for foot in feet)
+    addtask!.(Ref(lowlevel), collect(values(foot_angular_tasks)), 10.0)
+
+    foot_linear_tasks = Dict(BodyID(foot) => LinearAccelerationTask(mechanism, foot_paths[BodyID(foot)]) for foot in feet)
+    addtask!.(Ref(lowlevel), collect(values(foot_linear_tasks)))
 
     linmomtask = LinearMomentumRateTask(mechanism, centroidal_frame(lowlevel))
     addtask!(lowlevel, linmomtask, linear_momentum_weight)
@@ -48,7 +54,7 @@ function PushRecoveryController(
     addtask!(lowlevel, pelvistask, 10.0)
 
     revolutejoints = filter(j -> joint_type(j) isa Revolute, tree_joints(mechanism))
-    positioncontroljoints = setdiff(revolutejoints, vcat((collect(task.path) for task in values(foottasks))...))
+    positioncontroljoints = setdiff(revolutejoints, vcat((collect(path) for path in values(foot_paths))...))
     jointtasks = Dict(JointID(j) => JointAccelerationTask(j) for j in positioncontroljoints)
     addtask!.(Ref(lowlevel), collect(values(jointtasks)), 10.0)
 
@@ -56,7 +62,7 @@ function PushRecoveryController(
 
     PushRecoveryController(
         lowlevel, m, g,
-        foottasks, linmomtask, pelvistask, jointtasks,
+        foot_angular_tasks, foot_linear_tasks, linmomtask, pelvistask, jointtasks,
         linear_momentum_controller, pelvisgains, jointgains,
         comref, jointrefs,
         active_contact_points)
@@ -65,6 +71,15 @@ end
 function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, state::MechanismState)
     # Update active contact points
     update_active_contacts!(controller.active_contact_points, controller.lowlevel.contacts)
+
+    # Foot angular control
+    for (bodyid, task) in controller.foot_angular_tasks
+        # TODO: trajectory tracking
+        H = transform_to_root(state, bodyid)
+        T = transform(twist_wrt_world(state, bodyid), inv(H))
+        ωd_des = FreeVector3D(T.frame, pd(PDGains(0.0, 20.0), rotation(H), angular(T)))
+        setdesired!(task, ωd_des)
+    end
 
     # Linear momentum control
     c = center_of_mass(state)
@@ -79,7 +94,7 @@ function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, sta
     pelvis = target(controller.pelvistask.path)
     Hpelvis = transform_to_root(state, pelvis)
     Tpelvis = transform(twist_wrt_world(state, pelvis), inv(Hpelvis))
-    ωd_pelvis_des = FreeVector3D(Tpelvis.frame, pd(controller.pelvisgains, rotation(Hpelvis), Tpelvis.angular))
+    ωd_pelvis_des = FreeVector3D(Tpelvis.frame, pd(controller.pelvisgains, rotation(Hpelvis), angular(Tpelvis)))
     setdesired!(controller.pelvistask, ωd_pelvis_des)
 
     # Joint position control

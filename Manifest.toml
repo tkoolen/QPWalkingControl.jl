@@ -270,9 +270,9 @@ version = "0.1.1"
 
 [[JSExpr]]
 deps = ["JSON", "MacroTools", "Observables", "Test", "WebIO"]
-git-tree-sha1 = "e08b116ced6b7dd45cc7c2708864dc7e96727a9f"
+git-tree-sha1 = "013bc2143a2e84ea489365cf30db3407deb540c2"
 uuid = "97c1335a-c9c5-57fe-bc5d-ec35cebe8660"
-version = "0.3.1"
+version = "0.5.0"
 
 [[JSON]]
 deps = ["Dates", "Distributed", "Mmap", "Sockets", "Test", "Unicode"]
@@ -360,22 +360,20 @@ version = "0.3.0"
 [[MechanismGeometries]]
 deps = ["ColorTypes", "Compat", "CoordinateTransformations", "FileIO", "GeometryTypes", "LightXML", "MeshIO", "Pkg", "RigidBodyDynamics", "Rotations", "StaticArrays"]
 git-tree-sha1 = "05d1494cff08ea8863a45f001aa67dcfd07ac7a5"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaRobotics/MechanismGeometries.jl.git"
 uuid = "931e9471-e8fb-5385-a477-07ad12718aca"
-version = "0.1.2+"
+version = "0.2.0"
 
 [[MeshCat]]
-deps = ["AssetRegistry", "Base64", "BinDeps", "Colors", "CoordinateTransformations", "DocStringExtensions", "GeometryTypes", "JSExpr", "JSON", "Libdl", "LinearAlgebra", "MsgPack", "Mux", "Parameters", "Pkg", "Requires", "Rotations", "Sockets", "StaticArrays", "Test", "UUIDs", "WebIO"]
-git-tree-sha1 = "1be3ee466995ddbdfa6d6ef3d0cb12ca667b4235"
+deps = ["AssetRegistry", "Base64", "BinDeps", "Colors", "CoordinateTransformations", "DocStringExtensions", "GeometryTypes", "JSExpr", "Libdl", "LinearAlgebra", "MsgPack", "Mux", "Parameters", "Pkg", "Requires", "Rotations", "Sockets", "StaticArrays", "Test", "UUIDs", "WebIO"]
+git-tree-sha1 = "ca82d98e4ad31d7c3338ae32abd48a582c00d376"
 uuid = "283c5d60-a78f-5afe-a0af-af636b173e11"
-version = "0.5.0"
+version = "0.6.0"
 
 [[MeshCatMechanisms]]
 deps = ["ColorTypes", "CoordinateTransformations", "GeometryTypes", "InteractBase", "Interpolations", "LoopThrottle", "MechanismGeometries", "MeshCat", "OrderedCollections", "Pkg", "Random", "RigidBodyDynamics", "Test"]
-git-tree-sha1 = "42d3a89eb916f1e7cc26152188931f035d6db9f0"
+git-tree-sha1 = "1e1aa1909a91c4db744097f1e96434ebe4633f14"
 uuid = "6ad125db-dd91-5488-b820-c1df6aab299d"
-version = "0.2.1"
+version = "0.3.0"
 
 [[MeshIO]]
 deps = ["ColorTypes", "FileIO", "GeometryTypes", "Printf", "Test"]
@@ -504,7 +502,7 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "db61172356cd61f33aa544e26a8ebaa1e5584124"
+git-tree-sha1 = "bae95edcf12215647e7d82036b82a57bab3990ed"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"
@@ -550,7 +548,7 @@ version = "0.5.2"
 
 [[RigidBodyDynamics]]
 deps = ["DocStringExtensions", "LightXML", "LinearAlgebra", "LoopThrottle", "Profile", "Random", "Reexport", "Rotations", "SparseArrays", "StaticArrays", "Test", "TypeSortedCollections", "UnsafeArrays"]
-git-tree-sha1 = "44bfd0622210e9803d3f8f7180d8078a033304b1"
+git-tree-sha1 = "63ec39b83d95acd92e92d3881a7fd7ba386fd941"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaRobotics/RigidBodyDynamics.jl.git"
 uuid = "366cf18f-59d5-5db9-a4de-86a9f6786172"
@@ -670,7 +668,7 @@ version = "0.3.0"
 deps = ["AssetRegistry", "Base64", "Compat", "FunctionalCollections", "JSON", "Logging", "Observables", "Random", "Requires", "Sockets", "Test", "UUIDs", "Widgets"]
 git-tree-sha1 = "c1f259d4c23f12262f4fa69263a4e54fbea77450"
 uuid = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
-version = "0.4.2"
+version = "0.7.0"
 
 [[WebSockets]]
 deps = ["Base64", "Dates", "Distributed", "HTTP", "Logging", "MbedTLS", "Random", "Sockets", "Test"]
