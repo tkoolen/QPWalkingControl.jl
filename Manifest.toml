@@ -13,10 +13,10 @@ uuid = "bf4720bc-e11a-5d0c-854e-bdca1663c893"
 version = "0.1.0"
 
 [[AtlasRobot]]
-deps = ["Pkg", "RigidBodyDynamics", "StaticArrays", "Test"]
-git-tree-sha1 = "110c2d974db0c6f0909489442207dce36a49cfa4"
+deps = ["RigidBodyDynamics", "StaticArrays"]
+path = "/home/twan/.julia/dev/AtlasRobot"
 uuid = "436ed74b-f7b6-57fe-bd82-efdbd6c0ab0c"
-version = "0.2.0"
+version = "0.2.0+"
 
 [[AxisAlgorithms]]
 deps = ["Compat", "WoodburyMatrices"]
@@ -359,8 +359,8 @@ version = "0.3.0"
 
 [[MechanismGeometries]]
 deps = ["ColorTypes", "Compat", "CoordinateTransformations", "FileIO", "GeometryTypes", "LightXML", "MeshIO", "Pkg", "RigidBodyDynamics", "Rotations", "StaticArrays"]
-git-tree-sha1 = "4cb17815cc67a9538a921455f213866f891c02b1"
-repo-rev = "tk/link_colors"
+git-tree-sha1 = "05d1494cff08ea8863a45f001aa67dcfd07ac7a5"
+repo-rev = "master"
 repo-url = "https://github.com/JuliaRobotics/MechanismGeometries.jl.git"
 uuid = "931e9471-e8fb-5385-a477-07ad12718aca"
 version = "0.1.2+"
@@ -460,9 +460,9 @@ version = "1.0.2"
 
 [[OrdinaryDiffEq]]
 deps = ["DataStructures", "DiffEqBase", "DiffEqDiffTools", "DiffEqOperators", "ExponentialUtilities", "ForwardDiff", "GenericSVD", "InteractiveUtils", "LinearAlgebra", "Logging", "MuladdMacro", "NLsolve", "Parameters", "Printf", "Random", "RecursiveArrayTools", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "9c0cc1e62c94f214f6e9a3a62ec565a9710d21d8"
+git-tree-sha1 = "98353a57e894690fc8b8f21543839ede5c71b87d"
 uuid = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-version = "5.1.1"
+version = "5.1.2"
 
 [[Parameters]]
 deps = ["Markdown", "OrderedCollections", "REPL", "Test"]
@@ -504,7 +504,7 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "f1dfecc47e9a78bf2011c7647ba37e4eb6531932"
+git-tree-sha1 = "ae41edee0a3685ffb1bccdb2cc91f1bd6cd7e0c7"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"

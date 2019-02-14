@@ -3,7 +3,7 @@ function integrate_icp(ξ0, p::BezierCurve, ω, θ)
     return ξ0 * exp_ω_t - ω * exp_ω_t * exponential_integral(p, -ω, θ)
 end
 
-const COP_TRAJ_DEGREE = 2
+const COP_TRAJ_DEGREE = 4
 
 struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
     ω::T
@@ -79,22 +79,26 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         # ICP dynamics
         icp_knots = [SVector(Variable(model), Variable(model)) for i = 1 : n + 1]
         for i = 1 : n
-            @constraint model icp_knots[i] * exp(ω) - ω * exp(ω) * exponential_integral(cop_pieces[i] , -ω) == icp_knots[i + 1]
+            # Use an indicator variable to make icp knots equal if the Δt is zero
+            z = @expression Δts[i] != 0
+            next_icp = icp_knots[i] * exp(ω) - ω * exp(ω) * exponential_integral(cop_pieces[i] , -ω)
+            @constraint model icp_knots[i + 1] == z * Vector(next_icp) + (1 - z) * Vector(icp_knots[i]) # TODO: don't use Vector
         end
         @constraint model first(icp_knots) == initial_icp
         @constraint model last(icp_knots) == final_icp
         @constraint model last(last(cop_pieces).points) == final_icp # implies that final ICP velocity is zero
 
         # Objective
-        # objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
-        # for i = 1 : n
-        #     pᵢ = cop_pieces[i]
-        #     for point in pᵢ.points
-        #         e = @expression point - preferred_cops[i]
-        #         objective = @expression objective + e ⋅ e
-        #     end
-        # end
-        # @objective model Minimize objective
+        objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
+        for i = 1 : n
+            pᵢ = cop_pieces[i]
+            z = @expression Δts[i] != 0 # inactive segments shouldn't incur cost
+            for point in pᵢ.points
+                e = @expression point - preferred_cops[i]
+                objective = @expression objective + z * (e ⋅ e)
+            end
+        end
+        @objective model Minimize objective
 
         num_active_segments = Ref(0)
 
@@ -171,7 +175,7 @@ function find_segment(generator::ICPTrajectoryGenerator{T}, t::Number) where T
     i = 1
     t0 = zero(T)
     for Δt in generator.Δts
-        if t <= t0 + Δt
+        if t <= t0 + Δt || i >= generator.num_active_segments[]
             break
         else
             i += 1
@@ -207,4 +211,10 @@ function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
         ξd = zero(ξ)
     end
     ξ, ξd
+end
+
+function cop(generator::ICPTrajectoryGenerator, t::Number)
+    ξ, ξd = generator(t)
+    ω = generator.ω
+    return ξ - ξd / ω
 end

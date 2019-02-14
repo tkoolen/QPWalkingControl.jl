@@ -1,3 +1,2 @@
-include("icptrajectory.jl")
+include("trajectory_gen.jl")
 include("notebooks.jl")
-include("bezier.jl")
