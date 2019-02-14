@@ -14,7 +14,9 @@ version = "0.1.0"
 
 [[AtlasRobot]]
 deps = ["RigidBodyDynamics", "StaticArrays"]
-path = "/home/twan/.julia/dev/AtlasRobot"
+git-tree-sha1 = "e3ab82ab2d3f284a25f1f84fe8beddadc91da9bf"
+repo-rev = "master"
+repo-url = "https://github.com/tkoolen/AtlasRobot.jl.git"
 uuid = "436ed74b-f7b6-57fe-bd82-efdbd6c0ab0c"
 version = "0.2.0+"
 
@@ -412,9 +414,9 @@ version = "0.5.3"
 
 [[NLSolversBase]]
 deps = ["Calculus", "DiffEqDiffTools", "DiffResults", "Distributed", "ForwardDiff", "LinearAlgebra", "Random", "SparseArrays", "Test"]
-git-tree-sha1 = "3d58d0970b04c545534c0e70f3d8f12fe429b5e6"
+git-tree-sha1 = "2bd568eda045f5ad2cbd311d71e09d7165ab2bf6"
 uuid = "d41bc354-129a-5804-8e4c-c37616107c6c"
-version = "7.2.0"
+version = "7.3.0"
 
 [[NLsolve]]
 deps = ["DiffBase", "DiffEqDiffTools", "Distances", "ForwardDiff", "LineSearches", "LinearAlgebra", "NLSolversBase", "Printf", "Reexport", "SparseArrays", "Test"]
