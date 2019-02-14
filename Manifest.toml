@@ -13,12 +13,10 @@ uuid = "bf4720bc-e11a-5d0c-854e-bdca1663c893"
 version = "0.1.0"
 
 [[AtlasRobot]]
-deps = ["RigidBodyDynamics", "StaticArrays"]
+deps = ["Pkg", "RigidBodyDynamics", "StaticArrays", "Test"]
 git-tree-sha1 = "e3ab82ab2d3f284a25f1f84fe8beddadc91da9bf"
-repo-rev = "master"
-repo-url = "https://github.com/tkoolen/AtlasRobot.jl.git"
 uuid = "436ed74b-f7b6-57fe-bd82-efdbd6c0ab0c"
-version = "0.2.0+"
+version = "0.3.0"
 
 [[AxisAlgorithms]]
 deps = ["Compat", "WoodburyMatrices"]
@@ -408,15 +406,15 @@ version = "0.5.11"
 
 [[Mux]]
 deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Lazy", "Pkg", "Sockets", "Test", "WebSockets"]
-git-tree-sha1 = "487feb060cdd5cc152ef4f75b3cb565c0dc4300a"
+git-tree-sha1 = "cd8de2fc09f8fcc2ee300db39fa0706794b1b2e7"
 uuid = "a975b10e-0019-58db-a62f-e48ff68538c9"
-version = "0.5.3"
+version = "0.6.0"
 
 [[NLSolversBase]]
 deps = ["Calculus", "DiffEqDiffTools", "DiffResults", "Distributed", "ForwardDiff", "LinearAlgebra", "Random", "SparseArrays", "Test"]
-git-tree-sha1 = "2bd568eda045f5ad2cbd311d71e09d7165ab2bf6"
+git-tree-sha1 = "0c6f0e7f2178f78239cfb75310359eed10f2cacb"
 uuid = "d41bc354-129a-5804-8e4c-c37616107c6c"
-version = "7.3.0"
+version = "7.3.1"
 
 [[NLsolve]]
 deps = ["DiffBase", "DiffEqDiffTools", "Distances", "ForwardDiff", "LineSearches", "LinearAlgebra", "NLSolversBase", "Printf", "Reexport", "SparseArrays", "Test"]
@@ -462,9 +460,9 @@ version = "1.0.2"
 
 [[OrdinaryDiffEq]]
 deps = ["DataStructures", "DiffEqBase", "DiffEqDiffTools", "DiffEqOperators", "ExponentialUtilities", "ForwardDiff", "GenericSVD", "InteractiveUtils", "LinearAlgebra", "Logging", "MuladdMacro", "NLsolve", "Parameters", "Printf", "Random", "RecursiveArrayTools", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "Test"]
-git-tree-sha1 = "98353a57e894690fc8b8f21543839ede5c71b87d"
+git-tree-sha1 = "ad08db9efe2a5557d06daffd57e672a0e730f512"
 uuid = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-version = "5.1.2"
+version = "5.1.4"
 
 [[Parameters]]
 deps = ["Markdown", "OrderedCollections", "REPL", "Test"]
@@ -506,7 +504,7 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "ae41edee0a3685ffb1bccdb2cc91f1bd6cd7e0c7"
+git-tree-sha1 = "db61172356cd61f33aa544e26a8ebaa1e5584124"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"

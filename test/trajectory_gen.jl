@@ -15,7 +15,7 @@ using QPControl.Trajectories
 const MOI = MathOptInterface
 
 using PushRecovery: integrate_icp
-import PushRecovery: ICPTrajectoryGenerator, push_segment!, solve!, initial_icp, cop, find_segment
+import PushRecovery: ICPTrajectoryGenerator, push_segment!, solve!, initial_icp, cop, find_segment, initialize!
 import PushRecovery: HRep, SHRep
 
 const visualize = false
@@ -101,12 +101,13 @@ end
     for num_active_segments in 1 : num_segments
         tf = sum(Δts[1 : num_active_segments]) - 10 * eps()
         empty!(generator)
+        p0 = SVector(0.02, 0.01)
+        ξ0 = p0
+        ξf = centroid(convex_hulls[num_active_segments])
+        initialize!(generator, p0, ξ0, ξf)
         for i = 1 : num_active_segments
             push_segment!(generator, Δts[i], convex_hulls[i], centroid(convex_hulls[i]))
         end
-        generator.initial_icp[] = SVector(0.02, 0.01)
-        generator.initial_cop[] = generator.initial_icp[]
-        generator.final_icp[] = centroid(convex_hulls[num_active_segments])
 
         solve!(generator)
 

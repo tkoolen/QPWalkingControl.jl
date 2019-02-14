@@ -1,6 +1,6 @@
 function integrate_icp(ξ0, p::BezierCurve, ω, θ)
-    exp_ω_t = exp(ω * θ)
-    return ξ0 * exp_ω_t - ω * exp_ω_t * exponential_integral(p, -ω, θ)
+    exp_ω_θ = exp(ω * θ)
+    return ξ0 * exp_ω_θ - ω * exp_ω_θ * exponential_integral(p, -ω, θ)
 end
 
 const COP_TRAJ_DEGREE = 4
@@ -22,7 +22,7 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         # TODO:
         # * find the right objective function
 
-        # Variables: (COP_TRAJ_DEGREE + 5) * n + 2:
+        # Variables: (2 * COP_TRAJ_DEGREE + 4) * n + 2:
         # * CoP control points: 2 * (COP_TRAJ_DEGREE + 1) * n
         # * ICP knots: 2 * (n + 1)
         # Equality constraints: 6 * n + 4:
@@ -120,6 +120,14 @@ function Base.empty!(generator::ICPTrajectoryGenerator)
     end
     generator.Δts .= 0
     generator.num_active_segments[] = 0
+    generator
+end
+
+# TODO: name?
+function initialize!(generator::ICPTrajectoryGenerator, initial_cop::AbstractVector, initial_icp::AbstractVector, final_icp::AbstractVector)
+    generator.initial_cop[] = initial_cop
+    generator.initial_icp[] = initial_icp
+    generator.final_icp[] = final_icp
     generator
 end
 
