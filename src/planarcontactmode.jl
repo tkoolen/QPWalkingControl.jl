@@ -1,3 +1,4 @@
+# TODO: remove
 struct PlanarContactMode{T}
     frame::CartesianFrame3D
     projected_points::Vector{Vec2{T}}

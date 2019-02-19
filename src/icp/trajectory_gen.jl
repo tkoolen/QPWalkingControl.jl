@@ -132,18 +132,13 @@ function initialize!(generator::ICPTrajectoryGenerator, initial_cop::AbstractVec
 end
 
 function push_segment!(generator::ICPTrajectoryGenerator,
-        Δt::Number, cop_polyhedron::Union{ConvexHull, HRep}, preferred_cop::SVector)
+        Δt::Number, cop_polyhedron::ConvexHull, preferred_cop::SVector = centroid(cop_polyhedron))
     i = generator.num_active_segments[] += 1
     @boundscheck i <= length(generator.Δts) || error()
     @inbounds begin
         generator.Δts[i] = Δt
         hrep = generator.cop_polyhedra[i]
-        if cop_polyhedron isa HRep
-            hrep.A .= cop_polyhedron.A
-            hrep.b .= cop_polyhedron.b
-        else
-            hrep!(hrep.A, hrep.b, cop_polyhedron)
-        end
+        hrep!(hrep.A, hrep.b, cop_polyhedron)
         generator.preferred_cops[i] = preferred_cop
     end
     generator

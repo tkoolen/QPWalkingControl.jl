@@ -37,7 +37,7 @@ using Base.Iterators: cycle
 using RigidBodyDynamics.Graphs: TreePath, target
 using RigidBodyDynamics: frame_definition
 using StaticUnivariatePolynomials: derivative
-using QPControl.Trajectories: exponential_integral
+using QPControl.Trajectories: exponential_integral, breaks, subfunctions
 
 const SUP = StaticUnivariatePolynomials
 const MOI = MathOptInterface
