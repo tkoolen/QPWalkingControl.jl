@@ -59,6 +59,8 @@ include("icp/control.jl")
 include("icp/trajectory_gen.jl")
 include("icp/trajectory_init.jl")
 
+include("foot_trajectories/basic_foot_trajectory.jl")
+
 include("visualization.jl")
 
 using .Visualization
