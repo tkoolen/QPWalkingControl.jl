@@ -11,31 +11,37 @@ struct ICPWalkingStateMachine{N, I<:ICPTrajectoryGenerator, S<:SE3PDController}
     end_effector_controllers::Dict{BodyID, S}
     contact_plan::Piecewise{Constant{PlanarContactSituation{Float64}}, Float64, Vector{Constant{PlanarContactSituation{Float64}}}, Vector{Float64}}
     bodies::Vector{BodyID}
-    pointsbuffer::Vector{SVector{2, Float64}}
     # TODO: footstep generator
 end
 
 function ICPWalkingStateMachine(
-        contacts::Dict{BodyID, <:Vector{<:QPControl.ContactPoint}},
-        icp_trajectory_generator::ICPTrajectoryGenerator,
-        end_effector_controllers::Dict{BodyID, <:SE3PDController}
-    )
+            mechanism::Mechanism,
+            contacts::Dict{BodyID, <:Vector{<:QPControl.ContactPoint}},
+            icp_trajectory_generator::ICPTrajectoryGenerator
+        )
     T = Float64
     n = num_segments(icp_trajectory_generator)
     contact_situations = [PlanarContactSituation{Float64}() for i = 1 : n]
     times = zeros(T, n + 1)
-    support_polygon_plan = Piecewise(Constant.(contact_situations), times, clamp=true)
+    contact_plan = Piecewise(Constant.(contact_situations), times, clamp=true)
     bodies = sort!(collect(keys(contacts)), by = x -> x.value)
-    pointsbuffer = SVector{2, T}[]
+
+    # create end effector controllers
+    end_effector_controllers = map(bodies) do bodyid
+        body = findbody(mechanism, bodyid)
+        bodyframe = default_frame(body)
+        baseframe = root_frame(mechanism)
+        gains = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 0.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
+        angulartraj = Constant(one(Quat)) # TODO
+        lineartraj = BasicFootTrajectory(0.0, 1e-3, zero(SVector{3}), 1.0, zero(SVector{3}), 0.0)
+        trajectory = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
+        weight = Diagonal(vcat(fill(10.0, 3), fill(10.0, 3)))
+        BodyID(body) => SE3PDController(BodyID(root_body(mechanism)), BodyID(body), trajectory, weight, gains)
+    end |> Dict
+
     statemachine = ICPWalkingStateMachine(
         contacts, icp_trajectory_generator, end_effector_controllers,
-        support_polygon_plan, bodies, pointsbuffer)
-
-    for bodyid in keys(contacts)
-        enable_contacts!(statemachine, bodyid)
-    end
-
-    statemachine
+        contact_plan, bodies)
 end
 
 function enable_contacts!(statemachine::ICPWalkingStateMachine, bodyid::BodyID)
@@ -119,4 +125,3 @@ function (statemachine::ICPWalkingStateMachine)(t, state::MechanismState)
         end
     end
 end
-
