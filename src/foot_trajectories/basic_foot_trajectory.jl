@@ -4,6 +4,7 @@ struct BasicFootTrajectory{T}
     Δx::Polynomial{4, T}
     Δz::Polynomial{3, T}
     s::Polynomial{6, T}
+    tf::T
 end
 
 function BasicFootTrajectory(t0::Number, tf::Number, p0::SVector{3}, Δzmid::Number, pf::SVector{3}, zdf::Number)
@@ -39,7 +40,15 @@ function BasicFootTrajectory(t0::Number, tf::Number, p0::SVector{3}, Δzmid::Num
     # Interpolation trajectory
     s = fit_quintic(x0=t0, xf=tf, y0=s0, yd0=zero(s0), ydd0=zero(s0), yf=sf, ydf=sdf, yddf=zero(sf))
 
-    BasicFootTrajectory(p0, xaxis, Δx, Δz, s)
+    BasicFootTrajectory(p0, xaxis, Δx, Δz, s, tf)
+end
+
+function Base.convert(::Type{BasicFootTrajectory{T}}, p::SVector{3}, tf::Number) where {T}
+    xaxis = SVector(zero(T), zero(T))
+    Δx = Polynomial(ntuple(i -> zero(T), Val(4)))
+    Δz = Polynomial(ntuple(i -> zero(T), Val(3)))
+    s = Polynomial(ntuple(i -> zero(T), Val(6)))
+    BasicFootTrajectory(p, xaxis, Δx, Δz, s, tf)
 end
 
 function (traj::BasicFootTrajectory)(t::Number, ::Val{2})
