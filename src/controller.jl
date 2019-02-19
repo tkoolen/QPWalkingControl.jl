@@ -1,4 +1,4 @@
-struct PushRecoveryController{M<:MomentumBasedController, E<:SE3PDController, L}
+struct PushRecoveryController{M<:MomentumBasedController, S, E<:SE3PDController, L}
     lowlevel::M
     robotmass::Float64
     gravitymag::Float64
@@ -8,6 +8,7 @@ struct PushRecoveryController{M<:MomentumBasedController, E<:SE3PDController, L}
     pelvistask::AngularAccelerationTask
     jointtasks::Dict{JointID, JointAccelerationTask{Revolute{Float64}}}
 
+    statemachine::S
     end_effector_controllers::Vector{E}
     linear_momentum_controller::L
     pelvisgains::PDGains{Float64,Float64}
@@ -23,6 +24,7 @@ function PushRecoveryController(
         lowlevel::MomentumBasedController,
         pelvis::RigidBody,
         nominalstate::MechanismState,
+        statemachine,
         end_effector_controllers::Vector{<:SE3PDController},
         linear_momentum_controller,
         joint_regularization::Float64 = 0.05,
@@ -68,12 +70,15 @@ function PushRecoveryController(
     PushRecoveryController(
         lowlevel, m, g,
         end_effector_tasks, linmomtask, pelvistask, jointtasks,
-        end_effector_controllers, linear_momentum_controller, pelvisgains, jointgains,
+        statemachine, end_effector_controllers, linear_momentum_controller, pelvisgains, jointgains,
         comref, jointrefs,
         active_contact_points)
 end
 
 function (controller::PushRecoveryController)(τ::AbstractVector, t::Number, state::MechanismState)
+    # Call state machine
+    controller.statemachine(t, state)
+
     # Update active contact points
     update_active_contacts!(controller.active_contact_points, controller.lowlevel.contacts)
 

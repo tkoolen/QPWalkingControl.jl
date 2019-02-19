@@ -109,9 +109,9 @@ version = "0.3.2"
 
 [[DiffEqBase]]
 deps = ["Compat", "IteratorInterfaceExtensions", "LinearAlgebra", "RecipesBase", "RecursiveArrayTools", "Requires", "Roots", "SparseArrays", "StaticArrays", "Statistics", "SuiteSparse", "TableTraits", "Test", "TreeViews"]
-git-tree-sha1 = "cd1f12b447ef3be91a4d061d3bb1d6459a978a78"
+git-tree-sha1 = "e8eb39fcea76aa7212df40536f4a67bd29e23401"
 uuid = "2b5f629d-d688-5b77-993f-72d75c75574e"
-version = "5.2.2"
+version = "5.2.3"
 
 [[DiffEqCallbacks]]
 deps = ["DataStructures", "DiffEqBase", "LinearAlgebra", "OrdinaryDiffEq", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Test"]
@@ -502,7 +502,7 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "86fb864f57753cf1c9c7f75fc1cdda0bfe0cb1f1"
+git-tree-sha1 = "e4b16593fda9694148f241511a4458103217cf07"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"

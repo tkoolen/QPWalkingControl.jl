@@ -193,6 +193,8 @@ function find_segment(generator::ICPTrajectoryGenerator{T}, t::Number) where T
     i, t0
 end
 
+num_segments(generator::ICPTrajectoryGenerator) = length(generator.Δts)
+
 function (generator::ICPTrajectoryGenerator{T})(t::Number) where T
     t < 0 && throw(ArgumentError("Cannot evaluate at a negative time."))
     if t < sum(generator.Δts)

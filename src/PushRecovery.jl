@@ -4,6 +4,7 @@ export
     PushRecoveryController,
     ICPController,
     ICPTrajectoryGenerator,
+    ICPWalkingStateMachine,
     PushApplier,
     Widget, # from InteractBase
     PushRecoveryVisualizer,
@@ -58,6 +59,7 @@ include("icp/icp.jl")
 include("icp/control.jl")
 include("icp/trajectory_gen.jl")
 include("icp/trajectory_init.jl")
+include("icp/statemachine.jl")
 
 include("foot_trajectories/basic_foot_trajectory.jl")
 
