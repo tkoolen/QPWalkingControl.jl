@@ -12,10 +12,10 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
     icp_knots::Vector{SVector{2, Variable}}
     Δts::Vector{T}
     cop_polyhedra::Vector{MHRep{N, 2, T, L}}
-    preferred_cops::Vector{Vec2{T}}
-    initial_cop::Base.RefValue{Vec2{T}}
-    initial_icp::Base.RefValue{Vec2{T}}
-    final_icp::Base.RefValue{Vec2{T}}
+    preferred_cops::Vector{SVector{2, T}}
+    initial_cop::Base.RefValue{SVector{2, T}}
+    initial_icp::Base.RefValue{SVector{2, T}}
+    final_icp::Base.RefValue{SVector{2, T}}
     num_active_segments::Base.RefValue{Int}
 
     function ICPTrajectoryGenerator{T, N}(optimizer::O, num_segments::Integer, ω::Number) where {T, N, O<:MOI.AbstractOptimizer}
@@ -41,10 +41,10 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         # Parameters
         Δts = Parameter(model, val=zeros(T, n))
         cop_polyhedra = Parameter(model, val=[zero(MHRep{N, 2, T, L}) for i = 1 : n])
-        preferred_cops = Parameter(model, val=[zero(Vec2{T}) for i = 1 : n])
-        initial_cop = Parameter(model, val=zero(Vec2{T}))
-        initial_icp = Parameter(model, val=zero(Vec2{T}))
-        final_icp = Parameter(model, val=zero(Vec2{T}))
+        preferred_cops = Parameter(model, val=[zero(SVector{2, T}) for i = 1 : n])
+        initial_cop = Parameter(model, val=zero(SVector{2, T}))
+        initial_icp = Parameter(model, val=zero(SVector{2, T}))
+        final_icp = Parameter(model, val=zero(SVector{2, T}))
 
         # CoP trajectory
         cop_pieces = [BezierCurve(ntuple(i -> SVector(Variable(model), Variable(model)), Val(COP_TRAJ_DEGREE + 1))) for i = 1 : n]
@@ -165,11 +165,11 @@ function checkstatus(model::Parametron.Model)
 end
 
 function initial_icp(generator::ICPTrajectoryGenerator, segment_number::Integer)
-    value.(generator.model, generator.icp_knots[segment_number])
+    Parametron.value.(generator.model, generator.icp_knots[segment_number])
 end
 
 function cop_piece(generator::ICPTrajectoryGenerator, segment_number::Integer)
-    BezierCurve(map(x -> value.(generator.model, x), generator.cop_pieces[segment_number].points))
+    BezierCurve(map(x -> Parametron.value.(generator.model, x), generator.cop_pieces[segment_number].points))
 end
 
 final_time(generator::ICPTrajectoryGenerator) = sum(generator.Δts)

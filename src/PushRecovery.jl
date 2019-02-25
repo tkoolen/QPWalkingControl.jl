@@ -20,6 +20,10 @@ export
     @framechecked,
     unwrap
 
+# consider moving to RigidBodySim.jl
+export
+    JointDamping
+
 using LinearAlgebra
 using RigidBodyDynamics
 using RigidBodyDynamics.Contact
@@ -43,7 +47,6 @@ const SUP = StaticUnivariatePolynomials
 const MOI = MathOptInterface
 const RBD = RigidBodyDynamics
 
-const Vec2{T} = SVector{2, T}
 const SPoint3D{T} = Point3D{SVector{3, T}}
 
 include("frames.jl")
@@ -53,6 +56,7 @@ include("setup.jl")
 include("planarcontactmode.jl")
 include("controller.jl")
 
+include("damping.jl")
 include("pushapplier.jl")
 
 include("foot_trajectories/basic_foot_trajectory.jl")

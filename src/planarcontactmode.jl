@@ -1,12 +1,12 @@
 # TODO: remove
 struct PlanarContactMode{T}
     frame::CartesianFrame3D
-    projected_points::Vector{Vec2{T}}
+    projected_points::Vector{SVector{2, T}}
     hull::DConvexHull{T}
 end
 
 function PlanarContactMode{T}(frame::CartesianFrame3D) where T
-    projected_points = Vec2{T}[]
+    projected_points = SVector{2, T}[]
     hull = DConvexHull{T}()
     PlanarContactMode{T}(frame, projected_points, hull)
 end
