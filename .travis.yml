@@ -4,8 +4,12 @@ os:
   - linux
   - osx
 julia:
-  - 1.0
+  - 1.1
   - nightly
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/ # version tags
 matrix:
   allow_failures:
     - julia: nightly
