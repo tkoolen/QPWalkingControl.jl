@@ -486,11 +486,11 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlanarConvexHulls]]
 deps = ["DocStringExtensions", "LinearAlgebra", "StaticArrays"]
-git-tree-sha1 = "19228252a2849b2bc9062b2359e9aee76ad74e90"
+git-tree-sha1 = "554fb834bf38dddb52a6497bb18a3aa354c3d3a4"
 repo-rev = "master"
-repo-url = "git@github.com:tkoolen/PlanarConvexHulls.jl.git"
+repo-url = "https://github.com/tkoolen/PlanarConvexHulls.jl.git"
 uuid = "145d500b-351c-58b3-a0aa-f5d7e249d989"
-version = "0.1.0"
+version = "0.2.0"
 
 [[Printf]]
 deps = ["Unicode"]
@@ -502,9 +502,9 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "ef668653becbe89632b76f8d5d437d5d7f9433a6"
+git-tree-sha1 = "237f8879342e4aae040eaad89324b03895c7dd31"
 repo-rev = "master"
-repo-url = "git@github.com:tkoolen/QPControl.jl.git"
+repo-url = "https://github.com/tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"
 version = "0.0.0"
 

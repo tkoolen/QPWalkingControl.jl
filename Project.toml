@@ -38,3 +38,4 @@ UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [targets]
 test = ["NBInclude", "Pkg", "Test", "UnicodePlots", "ForwardDiff"]
+
