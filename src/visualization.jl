@@ -15,7 +15,7 @@ import WebIO
 
 using InteractBase: button, slider, vbox, pad, px, Widget, style, container
 using Observables: Observable, observe
-using ..PushRecovery: PushApplier, icp
+using ..QPWalkingControl: PushApplier, icp
 using RigidBodyDynamics: FreeVector3D, MechanismState
 using MeshCat: Visualizer
 using GeometryTypes: HyperSphere, Point

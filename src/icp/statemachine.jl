@@ -1,4 +1,4 @@
-# TODO: this is very messy
+# TODO: clean up
 
 struct PlanarContactSituation{T}
     active_body_poses::Dict{BodyID, Transform3D{T}}
@@ -148,7 +148,6 @@ function init_support!(end_effector_controller::SE3PDController, tf::Number)
 end
 
 function init_swing!(end_effector_controller::SE3PDController, pose0::Transform3D, posef::Transform3D, t0::Number, tf::Number)
-    # FIXME: poses are in sole frame!
     # TODO: frame lookup is kind of nasty
     bodyframe = end_effector_controller.trajectory[].body
     baseframe = end_effector_controller.trajectory[].base

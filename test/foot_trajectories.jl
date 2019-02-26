@@ -2,8 +2,8 @@ module FootTrajectoryTest
 
 using Test
 using StaticArrays
-import PushRecovery
-using PushRecovery: BasicFootTrajectory
+import QPWalkingControl
+using QPWalkingControl: BasicFootTrajectory
 
 @testset "BasicFootTrajectory" begin
     t0 = 0.2

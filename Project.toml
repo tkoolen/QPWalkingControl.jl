@@ -1,5 +1,5 @@
-name = "PushRecovery"
-uuid = "e5d7e63e-020d-11e9-1e2d-c1b17e981caa"
+name = "QPWalkingControl"
+uuid = "0b169a85-4a4a-588b-8c74-4a8044adc824"
 authors = ["Twan Koolen <koolen.twan@gmail.com>"]
 version = "0.1.0"
 

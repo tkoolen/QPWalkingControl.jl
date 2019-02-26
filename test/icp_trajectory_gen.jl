@@ -1,6 +1,6 @@
 module ICPTrajectoryTest
 
-using PushRecovery
+using QPWalkingControl
 using StaticArrays
 using MathOptInterface
 using OSQP
@@ -14,9 +14,9 @@ using QPControl.Trajectories
 
 const MOI = MathOptInterface
 
-using PushRecovery: integrate_icp
-import PushRecovery: ICPTrajectoryGenerator, push_segment!, solve!, initial_icp, cop, find_segment, initialize!
-import PushRecovery: HRep, SHRep
+using QPWalkingControl: integrate_icp
+import QPWalkingControl: ICPTrajectoryGenerator, push_segment!, solve!, initial_icp, cop, find_segment, initialize!
+import QPWalkingControl: HRep, SHRep
 
 const visualize = false
 @static if visualize

@@ -41,9 +41,9 @@ version = "0.5.3"
 
 [[Blink]]
 deps = ["Base64", "BinDeps", "Distributed", "JSExpr", "JSON", "Lazy", "Libdl", "Logging", "MacroTools", "Mustache", "Mux", "Reexport", "Sockets", "Test", "WebIO", "WebSockets"]
-git-tree-sha1 = "cd169880989669c2d48a72be9a2a691def62e257"
+git-tree-sha1 = "bfa6d8f3b9b246b2595e6f65f7aa4b2c605ff2a5"
 uuid = "ad839575-38b3-5650-b840-f874b8c74a25"
-version = "0.9.0"
+version = "0.10.0"
 
 [[CSSUtil]]
 deps = ["Colors", "Compat", "JSON", "Measures", "Pkg", "WebIO"]
@@ -230,15 +230,15 @@ version = "0.5.0"
 
 [[Interact]]
 deps = ["CSSUtil", "DataStructures", "InteractBase", "InteractBulma", "JSON", "Knockout", "Observables", "Reexport", "Test", "WebIO", "Widgets"]
-git-tree-sha1 = "102666d2d89a672c86bd33399a5f36c7e5d2b3b5"
+git-tree-sha1 = "759f0b5bb0359331e80bd9cd76bc38d519ba2847"
 uuid = "c601a237-2ae4-5e1e-952c-7a85b0c7eef1"
-version = "0.9.0"
+version = "0.9.1"
 
 [[InteractBase]]
 deps = ["Base64", "CSSUtil", "Colors", "DataStructures", "Dates", "JSExpr", "JSON", "Knockout", "Observables", "Random", "Test", "WebIO", "Widgets"]
-git-tree-sha1 = "c831c36639b30177440f394e82ec7fd1a6b87bab"
+git-tree-sha1 = "267939f10f2e77bf52a07950199dae8ae8152622"
 uuid = "d3863d7c-f0c8-5437-a7b4-3ae773c01009"
-version = "0.8.2"
+version = "0.8.3"
 
 [[InteractBulma]]
 deps = ["InteractBase", "Test"]
@@ -502,7 +502,7 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "e4b16593fda9694148f241511a4458103217cf07"
+git-tree-sha1 = "ef668653becbe89632b76f8d5d437d5d7f9433a6"
 repo-rev = "master"
 repo-url = "git@github.com:tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"
@@ -548,7 +548,7 @@ version = "0.5.2"
 
 [[RigidBodyDynamics]]
 deps = ["DocStringExtensions", "LightXML", "LinearAlgebra", "LoopThrottle", "Profile", "Random", "Reexport", "Rotations", "SparseArrays", "StaticArrays", "Test", "TypeSortedCollections", "UnsafeArrays"]
-git-tree-sha1 = "63ec39b83d95acd92e92d3881a7fd7ba386fd941"
+git-tree-sha1 = "207889e78b1a002ebd485a0fbc756149103fa083"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaRobotics/RigidBodyDynamics.jl.git"
 uuid = "366cf18f-59d5-5db9-a4de-86a9f6786172"
@@ -557,7 +557,7 @@ version = "1.4.0+"
 [[RigidBodySim]]
 deps = ["Blink", "CSSUtil", "DataStructures", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "DocStringExtensions", "ForwardDiff", "InteractBase", "LinearAlgebra", "MeshCatMechanisms", "Observables", "OrdinaryDiffEq", "Printf", "Random", "RigidBodyDynamics", "Test", "WebIO"]
 git-tree-sha1 = "c39b0bdba06b128695a7313000e35e156b3bede9"
-repo-rev = "tk/widen-vis"
+repo-rev = "master"
 repo-url = "https://github.com/JuliaRobotics/RigidBodySim.jl.git"
 uuid = "e61f16d8-a6b7-5689-8d03-627c2b27ebce"
 version = "1.1.0+"
@@ -677,10 +677,10 @@ uuid = "104b5d7c-a370-577a-8038-80a2059c5097"
 version = "1.3.0"
 
 [[Widgets]]
-deps = ["Observables", "OrderedCollections", "Test"]
-git-tree-sha1 = "c928228be493bab724f5ae35a38fb1415ae5cee9"
+deps = ["Colors", "Dates", "Observables", "OrderedCollections", "Test"]
+git-tree-sha1 = "f48ee34d9495924aba50eeb328d83b0034b787f5"
 uuid = "cc8bc4a8-27d6-5769-a93b-9d913e69aa62"
-version = "0.4.4"
+version = "0.5.0"
 
 [[WoodburyMatrices]]
 deps = ["LinearAlgebra", "Random", "SparseArrays", "Test"]

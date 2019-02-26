@@ -1,4 +1,4 @@
-module PushRecovery
+module QPWalkingControl
 
 export
     PushRecoveryController,
