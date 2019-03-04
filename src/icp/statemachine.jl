@@ -72,9 +72,9 @@ function init_footstep_plan!(statemachine::ICPWalkingStateMachine, state::Mechan
         body_poses[bodyid] = body_pose
     end
     Δt_first_transfer = 2.0
-    Δt_transfer = 1.0
-    Δt_swing = 0.8
-    step_length = 0.3
+    Δt_transfer = 0.55
+    Δt_swing = 0.75
+    step_length = 0.4
 
     ts = breaks(statemachine.contact_plan)
     ts[1] = 0
@@ -141,7 +141,7 @@ function init_support!(end_effector_controller::SE3PDController, tf::Number)
     # TODO: frame lookup is kind of nasty
     bodyframe = end_effector_controller.trajectory[].body
     baseframe = end_effector_controller.trajectory[].base
-    end_effector_controller.gains[] = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 20.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
+    end_effector_controller.gains[] = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 15.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
     angulartraj = Constant(one(Quat)) # TODO
     lineartraj = convert(BasicFootTrajectory{Float64}, SVector(0.0, 0.0, 0.0), tf)
     end_effector_controller.trajectory[] = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
@@ -151,7 +151,10 @@ function init_swing!(end_effector_controller::SE3PDController, pose0::Transform3
     # TODO: frame lookup is kind of nasty
     bodyframe = end_effector_controller.trajectory[].body
     baseframe = end_effector_controller.trajectory[].base
-    end_effector_controller.gains[] = SE3PDGains(FramePDGains(bodyframe, PDGains(100.0, 20.0)), FramePDGains(bodyframe, PDGains(100.0, 0.0)))
+    end_effector_controller.gains[] = SE3PDGains(
+        FramePDGains(bodyframe, critically_damped_gains(100.)),
+        FramePDGains(bodyframe, critically_damped_gains(100.))
+    )
     angulartraj = Constant(one(Quat)) # TODO
     Δzmid = 0.1
     lineartraj = BasicFootTrajectory(t0, tf, translation(pose0), Δzmid, translation(posef), -0.1)

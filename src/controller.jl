@@ -11,7 +11,7 @@ struct PushRecoveryController{M<:MomentumBasedController, S, E<:SE3PDController,
     statemachine::S
     end_effector_controllers::Vector{E}
     linear_momentum_controller::L
-    pelvisgains::PDGains{Float64,Float64}
+    pelvisgains::PDGains{Diagonal{Float64, SVector{3, Float64}}, Diagonal{Float64, SVector{3, Float64}}}
     jointgains::Dict{JointID, PDGains{Float64, Float64}}
 
     comref::Point3D{SVector{3, Float64}}
@@ -29,7 +29,7 @@ function PushRecoveryController(
         linear_momentum_controller,
         joint_regularization::Float64 = 0.05,
         linear_momentum_weight::Float64 = 1.0,
-        pelvisgains::PDGains = critically_damped_gains(100.0),
+        pelvisgains::PDGains = default_pelvis_gains(),
         jointgains = Dict(JointID(j) => critically_damped_gains(100.0) for j in tree_joints(lowlevel.state.mechanism)),
         comref::Point3D = center_of_mass(nominalstate) - FreeVector3D(root_frame(lowlevel.state.mechanism), 0., 0., 0.05),
         jointrefs = Dict(JointID(j) => configuration(nominalstate, j)[1] for j in tree_joints(lowlevel.state.mechanism) if joint_type(j) isa Revolute))
@@ -130,4 +130,10 @@ function update_active_contacts!(active_contact_points::AbstractDict{BodyID, <:A
         end
     end
     nothing
+end
+
+function default_pelvis_gains()
+    gains_xy = critically_damped_gains(100.0)
+    gains_z = critically_damped_gains(50.0)
+    PDGains(Diagonal(SVector(gains_xy.k, gains_xy.k, gains_z.k)), Diagonal(SVector(gains_xy.d, gains_xy.d, gains_z.d)))
 end
