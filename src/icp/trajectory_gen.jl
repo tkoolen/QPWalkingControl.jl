@@ -150,9 +150,9 @@ function solve!(generator::ICPTrajectoryGenerator)
 end
 
 function checkstatus(model::Parametron.Model)
-    ok = terminationstatus(model) == MOI.Success && primalstatus(model) == MOI.FeasiblePoint
+    ok = terminationstatus(model) == MOI.OPTIMAL && primalstatus(model) == MOI.FEASIBLE_POINT
     if !ok
-        okish = terminationstatus(model) == MOI.AlmostSuccess && primalstatus(model) == MOI.UnknownResultStatus
+        okish = terminationstatus(model) == MOI.ALMOST_OPTIMAL && primalstatus(model) == MOI.UNKNOWN_RESULT_STATUS
         if !okish
             """
             Solve failed.
