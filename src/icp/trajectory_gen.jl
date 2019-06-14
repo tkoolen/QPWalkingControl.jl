@@ -50,20 +50,20 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         cop_pieces = [BezierCurve(ntuple(i -> SVector(Variable(model), Variable(model)), Val(COP_TRAJ_DEGREE + 1))) for i = 1 : n]
 
         # Initial CoP
-        @constraint model first(first(cop_pieces).points) == initial_cop
+        @constraint model first(first(cop_pieces).coeffs) == initial_cop
 
         # CoP trajectory continuity
         for i = 1 : n - 1
             # C⁰
             pᵢ = cop_pieces[i]
             pᵢ₊₁ = cop_pieces[i + 1]
-            @constraint model first(pᵢ₊₁.points) == last(pᵢ.points)
+            @constraint model first(pᵢ₊₁.coeffs) == last(pᵢ.coeffs)
 
             # C¹. Note: clearing denominators.
             pᵢ′ = derivative(pᵢ)
             pᵢ₊₁′ = derivative(pᵢ₊₁)
-            # @constraint model first(pᵢ₊₁′.points) * Δts[i] == last(pᵢ′.points) * Δts[i + 1] #  # TODO: allocates. Fix missing optimization for SVector * scalar.
-            @constraint model Vector(first(pᵢ₊₁′.points)) * Δts[i] == Vector(last(pᵢ′.points)) * Δts[i + 1]
+            # @constraint model first(pᵢ₊₁′.coeffs) * Δts[i] == last(pᵢ′.coeffs) * Δts[i + 1] #  # TODO: allocates. Fix missing optimization for SVector * scalar.
+            @constraint model Vector(first(pᵢ₊₁′.coeffs)) * Δts[i] == Vector(last(pᵢ′.coeffs)) * Δts[i + 1]
         end
 
         # CoP bounds
@@ -71,7 +71,7 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
             Aᵢ = @expression cop_polyhedra[i].A
             bᵢ = @expression cop_polyhedra[i].b
             pᵢ = cop_pieces[i]
-            for point in pᵢ.points
+            for point in pᵢ.coeffs
                 @constraint model Aᵢ * point <= bᵢ
             end
         end
@@ -86,14 +86,14 @@ struct ICPTrajectoryGenerator{T, N, O<:MOI.AbstractOptimizer, L}
         end
         @constraint model first(icp_knots) == initial_icp
         @constraint model last(icp_knots) == final_icp
-        @constraint model last(last(cop_pieces).points) == final_icp # implies that final ICP velocity is zero
+        @constraint model last(last(cop_pieces).coeffs) == final_icp # implies that final ICP velocity is zero
 
         # Objective
         objective = Parametron.LazyExpression(identity, zero(QuadraticFunction{Float64}))
         for i = 1 : n
             pᵢ = cop_pieces[i]
             z = @expression Δts[i] != 0 # inactive segments shouldn't incur cost
-            for point in pᵢ.points
+            for point in pᵢ.coeffs
                 e = @expression point - preferred_cops[i]
                 objective = @expression objective + z * (e ⋅ e)
             end
@@ -169,7 +169,7 @@ function initial_icp(generator::ICPTrajectoryGenerator, segment_number::Integer)
 end
 
 function cop_piece(generator::ICPTrajectoryGenerator, segment_number::Integer)
-    BezierCurve(map(x -> Parametron.value.(generator.model, x), generator.cop_pieces[segment_number].points))
+    BezierCurve(map(x -> Parametron.value.(generator.model, x), generator.cop_pieces[segment_number].coeffs))
 end
 
 final_time(generator::ICPTrajectoryGenerator) = sum(generator.Δts)
