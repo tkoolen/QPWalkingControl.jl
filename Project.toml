@@ -30,6 +30,9 @@ StaticUnivariatePolynomials = "6f584044-cad5-5b68-a429-1e244a824f76"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 
+[compat]
+StaticUnivariatePolynomials = "≥ 0.6.0"
+
 [extras]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 NBInclude = "0db19996-df87-5ea3-a455-e3a50d440464"

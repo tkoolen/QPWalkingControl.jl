@@ -468,7 +468,9 @@ version = "0.10.3"
 
 [[Parametron]]
 deps = ["DocStringExtensions", "FunctionWrappers", "LinearAlgebra", "MacroTools", "MathOptInterface"]
-git-tree-sha1 = "acd4c6fe32d759242fabc1df4c09c7f6159752f3"
+git-tree-sha1 = "16561a45cf643ba94fb9ded8d5e1d80db5cc9a6e"
+repo-rev = "master"
+repo-url = "https://github.com/tkoolen/Parametron.jl.git"
 uuid = "41fac6d6-0ffa-5bcc-b863-17dd4947be41"
 version = "0.9.0"
 
@@ -496,7 +498,7 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [[QPControl]]
 deps = ["LinearAlgebra", "MathOptInterface", "Parametron", "RigidBodyDynamics", "Rotations", "StaticArrays", "StaticUnivariatePolynomials"]
-git-tree-sha1 = "50248ba9ba53ce2d5277e946378347b92d6f1651"
+git-tree-sha1 = "387165e7d81764da1f783fe462e16dfd84672a99"
 repo-rev = "master"
 repo-url = "https://github.com/tkoolen/QPControl.jl.git"
 uuid = "d1d18edd-2826-5709-814b-0b0c7d0d034b"
