@@ -12,6 +12,7 @@ using NamedColors
 import Observables
 import InteractBase
 import WebIO
+import RigidBodySim
 
 using InteractBase: button, slider, vbox, pad, px, Widget, style, container
 using Observables: Observable, observe
@@ -19,6 +20,7 @@ using ..QPWalkingControl: PushApplier, icp
 using RigidBodyDynamics: FreeVector3D, MechanismState
 using MeshCat: Visualizer
 using GeometryTypes: HyperSphere, Point
+
 
 function InteractBase.Widget(controller::PushApplier; max_force::Number, max_Δt::Number)
     pushbutton = button("Apply push")
@@ -70,6 +72,6 @@ end
 
 Base.wait(vis::PushRecoveryVisualizer) = Base.wait(vis.mvis)
 
-MeshCatMechanisms.visualizer(vis::PushRecoveryVisualizer) = MeshCatMechanisms.visualizer(vis.mvis)
+RigidBodySim.Visualization.mechanism_visualizer(vis::PushRecoveryVisualizer) = vis.mvis
 
 end # module
