@@ -1,7 +1,7 @@
 module QPWalkingControl
 
 export
-    PushRecoveryController,
+    HumanoidQPController,
     ICPController,
     ICPTrajectoryGenerator,
     ICPWalkingStateMachine,
