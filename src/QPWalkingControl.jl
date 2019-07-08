@@ -5,6 +5,7 @@ export
     ICPController,
     ICPTrajectoryGenerator,
     ICPWalkingStateMachine,
+    PDCoMController,
     PushApplier,
     Widget, # from InteractBase
     PushRecoveryVisualizer,
@@ -67,6 +68,8 @@ include("icp/control.jl")
 include("icp/trajectory_gen.jl")
 include("icp/trajectory_init.jl")
 include("icp/statemachine.jl")
+
+include("com_tracking/control.jl")
 
 include("visualization.jl")
 
