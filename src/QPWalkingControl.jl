@@ -6,6 +6,7 @@ export
     ICPTrajectoryGenerator,
     ICPWalkingStateMachine,
     PDCoMController,
+    CoMTrackingStateMachine,
     PushApplier,
     Widget, # from InteractBase
     PushRecoveryVisualizer,
@@ -53,6 +54,7 @@ const SPoint3D{T} = Point3D{SVector{3, T}}
 include("frames.jl")
 include("util.jl")
 
+include("se3pdutil.jl")
 include("setup.jl")
 include("planarcontactmode.jl")
 include("controller.jl")
@@ -70,6 +72,7 @@ include("icp/trajectory_init.jl")
 include("icp/statemachine.jl")
 
 include("com_tracking/control.jl")
+include("com_tracking/statemachine.jl")
 
 include("visualization.jl")
 
