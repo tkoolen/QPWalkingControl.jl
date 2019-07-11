@@ -60,6 +60,7 @@ include("damping.jl")
 include("pushapplier.jl")
 
 include("foot_trajectories/basic_foot_trajectory.jl")
+include("foot_trajectories/foot_trajectory_gen.jl")
 
 include("icp/icp.jl")
 include("icp/control.jl")

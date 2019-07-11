@@ -19,6 +19,7 @@ end
 # TODO: not super nice:
 isdone(trajectory::SE3Trajectory, t) = isdone(trajectory.angular, t) || isdone(trajectory.linear, t)
 isdone(trajectory::Constant, t) = false
+isdone(trajectory::Interpolated, t) = t > trajectory.xf
 isdone(trajectory::BasicFootTrajectory, t) = t > trajectory.tf
 
 function ICPWalkingStateMachine(
@@ -39,7 +40,7 @@ function ICPWalkingStateMachine(
         bodyframe = default_frame(body)
         baseframe = root_frame(mechanism)
         gains = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 20.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
-        angulartraj = Constant(one(Quat)) # TODO
+        angulartraj = interpolated_orientation_trajectory(0.0, 0.0, one(Quat{T}), one(Quat{T}))
         lineartraj = convert(BasicFootTrajectory{T}, SVector(0.0, 0.0, 0.0), 0.0)
         trajectory = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
         weight = Diagonal(vcat(fill(10.0, 3), fill(10.0, 3)))
@@ -133,32 +134,8 @@ function init_footstep_plan!(statemachine::ICPWalkingStateMachine, state::Mechan
     solve!(statemachine.icp_trajectory_generator)
 
     for end_effector_controller in values(statemachine.end_effector_controllers)
-        init_support!(end_effector_controller, ts[2])
+        init_support!(end_effector_controller; t0=ts[1], tf=ts[2])
     end
-end
-
-function init_support!(end_effector_controller::SE3PDController, tf::Number)
-    # TODO: frame lookup is kind of nasty
-    bodyframe = end_effector_controller.trajectory[].body
-    baseframe = end_effector_controller.trajectory[].base
-    end_effector_controller.gains[] = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 15.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
-    angulartraj = Constant(one(Quat)) # TODO
-    lineartraj = convert(BasicFootTrajectory{Float64}, SVector(0.0, 0.0, 0.0), tf)
-    end_effector_controller.trajectory[] = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
-end
-
-function init_swing!(end_effector_controller::SE3PDController, pose0::Transform3D, posef::Transform3D, t0::Number, tf::Number)
-    # TODO: frame lookup is kind of nasty
-    bodyframe = end_effector_controller.trajectory[].body
-    baseframe = end_effector_controller.trajectory[].base
-    end_effector_controller.gains[] = SE3PDGains(
-        FramePDGains(bodyframe, critically_damped_gains(100.)),
-        FramePDGains(bodyframe, critically_damped_gains(100.))
-    )
-    angulartraj = Constant(one(Quat)) # TODO
-    Δzmid = 0.1
-    lineartraj = BasicFootTrajectory(t0, tf, translation(pose0), Δzmid, translation(posef), -0.1)
-    end_effector_controller.trajectory[] = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
 end
 
 function (statemachine::ICPWalkingStateMachine)(t, state::MechanismState)
@@ -182,11 +159,11 @@ function (statemachine::ICPWalkingStateMachine)(t, state::MechanismState)
             index = min(searchsortedlast(breaks(contact_plan), t′), n)
             tf = breaks(contact_plan)[min(index + 1, n)]
             if bodyid in keys(active_body_poses)
-                init_support!(end_effector_controller, tf)
+                init_support!(end_effector_controller; t0=t′, tf=tf)
             else
                 previous_pose = subfunctions(contact_plan)[index - 1].value.active_body_poses[bodyid]
                 next_pose = subfunctions(contact_plan)[index + 1].value.active_body_poses[bodyid]
-                init_swing!(end_effector_controller, previous_pose, next_pose, t′, tf)
+                init_swing!(end_effector_controller, previous_pose, next_pose; t0=t′, tf=tf)
             end
         end
     end
