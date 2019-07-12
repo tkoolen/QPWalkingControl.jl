@@ -10,7 +10,7 @@ end
 
 function init_swing!(end_effector_controller::SE3PDController, pose0::Transform3D, posef::Transform3D,
         t0::Number, tf::Number,
-        Δzmid::Number=0.1, zdf::Number=-0.1) # TODO: kwargs
+        Δzmid::Number=0.15, zdf::Number=-0.1) # TODO: kwargs
     # TODO: frame lookup is kind of nasty
     bodyframe = end_effector_controller.trajectory[].body
     baseframe = end_effector_controller.trajectory[].base

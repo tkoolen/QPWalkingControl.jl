@@ -1,4 +1,5 @@
 struct CoMTrackingStateMachine{N, S<:SE3PDController}
+    in_contact::Dict{BodyID, Bool}
     contacts::Dict{BodyID, Vector{QPControl.ContactPoint{N}}}
     end_effector_controllers::Dict{BodyID, S}
     pose_plans::Dict{BodyID, PosePlan{Float64}}
@@ -10,6 +11,7 @@ function CoMTrackingStateMachine(
             contacts::Dict{BodyID, <:Vector{<:QPControl.ContactPoint}}
         )
     T = Float64
+    in_contact = Dict(bodyid => false for bodyid in keys(contacts))
     bodyids = sort!(collect(keys(contacts)), by = x -> x.value)
     end_effector_controllers = map(bodyids) do bodyid
         body = findbody(mechanism, bodyid)
@@ -23,7 +25,7 @@ function CoMTrackingStateMachine(
         bodyid => SE3PDController(BodyID(root_body(mechanism)), BodyID(body), trajectory, weight, gains)
     end |> Dict
     pose_plans = Dict(bodyid => PosePlan{Float64}() for bodyid in bodyids)
-    ret = CoMTrackingStateMachine(contacts, end_effector_controllers, pose_plans, bodyids)
+    ret = CoMTrackingStateMachine(in_contact, contacts, end_effector_controllers, pose_plans, bodyids)
     for bodyid in bodyids
         enable_contacts!(ret, bodyid)
     end
@@ -57,8 +59,11 @@ function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
             if !isempty(pose_plan) && t >= next_move_start_time(pose_plan) && !statemachine.in_contact[bodyid]
                 pose0 = transform_to_root(state, bodyid)
                 t0, duration, posef = popfirst!(pose_plan)
+                body_to_sole = inv(frame_definition(findbody(state.mechanism, bodyid), posef.from)) # TODO: inefficient
+                posef = posef * body_to_sole
                 disable_contacts!(statemachine, bodyid)
                 init_swing!(end_effector_controller, pose0, posef, t0=t0, tf=t0 + duration)
+                println("swinging")
             else
                 enable_contacts!(statemachine, bodyid)
                 init_support!(end_effector_controller; t0=t, tf=t + 1e-6) # TODO: 1e-6
