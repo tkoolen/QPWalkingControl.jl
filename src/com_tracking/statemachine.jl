@@ -1,8 +1,8 @@
 struct CoMTrackingStateMachine{N, S<:SE3PDController}
     contacts::Dict{BodyID, Vector{QPControl.ContactPoint{N}}}
     end_effector_controllers::Dict{BodyID, S}
-    # contact_plan::Piecewise{Constant{PlanarContactSituation{Float64}}, Float64, Vector{Constant{PlanarContactSituation{Float64}}}, Vector{Float64}}
-    bodies::Vector{BodyID}
+    pose_plans::Dict{BodyID, PosePlan{Float64}}
+    bodyids::Vector{BodyID}
 end
 
 function CoMTrackingStateMachine(
@@ -10,22 +10,29 @@ function CoMTrackingStateMachine(
             contacts::Dict{BodyID, <:Vector{<:QPControl.ContactPoint}}
         )
     T = Float64
-    bodies = sort!(collect(keys(contacts)), by = x -> x.value)
-
-    # create end effector controllers
-    end_effector_controllers = map(bodies) do bodyid
+    bodyids = sort!(collect(keys(contacts)), by = x -> x.value)
+    end_effector_controllers = map(bodyids) do bodyid
         body = findbody(mechanism, bodyid)
         bodyframe = default_frame(body)
         baseframe = root_frame(mechanism)
         gains = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 20.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
-        angulartraj = Constant(one(Quat)) # TODO
+        angulartraj = interpolated_orientation_trajectory(0.0, 1e-6, one(Quat{Float64}), one(Quat{Float64})) # TODO: 1e-6
         lineartraj = convert(BasicFootTrajectory{T}, SVector(0.0, 0.0, 0.0), 0.0)
         trajectory = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
         weight = Diagonal(vcat(fill(10.0, 3), fill(10.0, 3)))
-        BodyID(body) => SE3PDController(BodyID(root_body(mechanism)), BodyID(body), trajectory, weight, gains)
+        bodyid => SE3PDController(BodyID(root_body(mechanism)), BodyID(body), trajectory, weight, gains)
     end |> Dict
+    pose_plans = Dict(bodyid => PosePlan{Float64}() for bodyid in bodyids)
+    ret = CoMTrackingStateMachine(contacts, end_effector_controllers, pose_plans, bodyids)
+    for bodyid in bodyids
+        enable_contacts!(ret, bodyid)
+    end
+    return ret
+end
 
-    CoMTrackingStateMachine(contacts, end_effector_controllers, bodies)
+function set_pose_plan!(statemachine::CoMTrackingStateMachine, bodyid::BodyID, plan::PosePlan)
+    statemachine.pose_plans[bodyid] = plan
+    return nothing
 end
 
 function enable_contacts!(statemachine::CoMTrackingStateMachine, bodyid::BodyID)
@@ -41,13 +48,21 @@ function disable_contacts!(statemachine::CoMTrackingStateMachine, bodyid::BodyID
 end
 
 function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
-    # Enable/disable contacts
-    # TODO
-    for (bodyid, end_effector_controller) in statemachine.end_effector_controllers
-        enable_contacts!(statemachine, bodyid)
-        init_support!(end_effector_controller, 0.0) # TODO: tf?
+    end_effector_controllers = statemachine.end_effector_controllers
+    pose_plans = statemachine.pose_plans
+    for bodyid in statemachine.bodyids
+        end_effector_controller = end_effector_controllers[bodyid]
+        if isdone(end_effector_controller.trajectory[], t)
+            pose_plan = pose_plans[bodyid]
+            if !isempty(pose_plan) && t >= next_move_start_time(pose_plan) && !statemachine.in_contact[bodyid]
+                pose0 = transform_to_root(state, bodyid)
+                t0, duration, posef = popfirst!(pose_plan)
+                disable_contacts!(statemachine, bodyid)
+                init_swing!(end_effector_controller, pose0, posef, t0=t0, tf=t0 + duration)
+            else
+                enable_contacts!(statemachine, bodyid)
+                init_support!(end_effector_controller; t0=t, tf=t + 1e-6) # TODO: 1e-6
+            end
+        end
     end
-
-    # Gain scheduling / trajectory initialization
-    # TODO
 end

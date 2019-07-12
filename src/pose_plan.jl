@@ -13,3 +13,11 @@ function Base.push!(plan::PosePlan, start_time::Number, duration::Number, final_
     push!(plan.final_poses, final_pose)
     return plan
 end
+
+Base.isempty(plan::PosePlan) = isempty(plan.move_start_times)
+
+next_move_start_time(plan::PosePlan) = first(plan.move_start_times)
+
+function Base.popfirst!(plan::PosePlan)
+    (popfirst!(plan.move_start_times), popfirst!(plan.move_durations), popfirst!(plan.final_poses))
+end
