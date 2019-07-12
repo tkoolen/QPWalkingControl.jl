@@ -59,6 +59,8 @@ include("setup.jl")
 include("planarcontactmode.jl")
 include("controller.jl")
 
+include("pose_plan.jl")
+
 include("damping.jl")
 include("pushapplier.jl")
 
