@@ -38,12 +38,14 @@ function set_pose_plan!(statemachine::CoMTrackingStateMachine, bodyid::BodyID, p
 end
 
 function enable_contacts!(statemachine::CoMTrackingStateMachine, bodyid::BodyID)
+    statemachine.in_contact[bodyid] = true
     for contact in statemachine.contacts[bodyid]
         contact.maxnormalforce[] = 1e6 # TODO
     end
 end
 
 function disable_contacts!(statemachine::CoMTrackingStateMachine, bodyid::BodyID)
+    statemachine.in_contact[bodyid] = false
     for contact in statemachine.contacts[bodyid]
         disable!(contact)
     end
@@ -56,17 +58,28 @@ function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
         end_effector_controller = end_effector_controllers[bodyid]
         if isdone(end_effector_controller.trajectory[], t)
             pose_plan = pose_plans[bodyid]
-            if !isempty(pose_plan) && t >= next_move_start_time(pose_plan) && !statemachine.in_contact[bodyid]
-                pose0 = transform_to_root(state, bodyid)
-                t0, duration, posef = popfirst!(pose_plan)
-                body_to_sole = inv(frame_definition(findbody(state.mechanism, bodyid), posef.from)) # TODO: inefficient
-                posef = posef * body_to_sole
-                disable_contacts!(statemachine, bodyid)
-                init_swing!(end_effector_controller, pose0, posef, t0=t0, tf=t0 + duration)
-                println("swinging")
+            if !isempty(pose_plan)
+                if t >= next_move_start_time(pose_plan)
+                    # starting swing
+                    println(findbody(state.mechanism, bodyid), " entering swing at $t.")
+                    disable_contacts!(statemachine, bodyid)
+                    @assert !isempty(pose_plan)
+                    pose0 = transform_to_root(state, bodyid)
+                    t0, duration, posef = popfirst!(pose_plan)
+                    body_to_sole = inv(frame_definition(findbody(state.mechanism, bodyid), posef.from)) # TODO: inefficient
+                    posef = posef * body_to_sole
+                    init_swing!(end_effector_controller, pose0, posef; t0=t0, tf=t0 + duration, zdf=-0.05, Δzmid=0.15)
+                else
+                    # coming into contact
+                    println(findbody(state.mechanism, bodyid), " entering support at $t.")
+                    enable_contacts!(statemachine, bodyid)
+                    init_support!(end_effector_controller; t0=t, tf=next_move_start_time(pose_plan))
+                end
             else
+                # entering final contact phase
+                println(findbody(state.mechanism, bodyid), " entering final support at $t.")
                 enable_contacts!(statemachine, bodyid)
-                init_support!(end_effector_controller; t0=t, tf=t + 1e-6) # TODO: 1e-6
+                init_support!(end_effector_controller; t0=t, tf=Inf)
             end
         end
     end
