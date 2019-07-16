@@ -8,7 +8,7 @@ function init_support!(end_effector_controller::SE3PDController; t0::Number, tf:
     # TODO: frame lookup is kind of nasty
     bodyframe = end_effector_controller.trajectory[].body
     baseframe = end_effector_controller.trajectory[].base
-    end_effector_controller.gains[] = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 15.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
+    end_effector_controller.gains[] = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 0.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
     angulartraj = interpolated_orientation_trajectory(t0, tf, one(Quat{Float64}), one(Quat{Float64}))
     lineartraj = convert(BasicFootTrajectory{Float64}, SVector(0.0, 0.0, 0.0), tf)
     end_effector_controller.trajectory[] = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
