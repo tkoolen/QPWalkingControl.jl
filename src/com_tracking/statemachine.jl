@@ -18,8 +18,8 @@ function CoMTrackingStateMachine(
         bodyframe = default_frame(body)
         baseframe = root_frame(mechanism)
         gains = SE3PDGains(FramePDGains(bodyframe, PDGains(0.0, 20.0)), FramePDGains(bodyframe, PDGains(0.0, 0.0)))
-        angulartraj = interpolated_orientation_trajectory(0.0, 1e-6, one(Quat{Float64}), one(Quat{Float64})) # TODO: 1e-6
-        lineartraj = convert(BasicFootTrajectory{T}, SVector(0.0, 0.0, 0.0), 0.0)
+        angulartraj = interpolated_orientation_trajectory(0.0, Inf, one(Quat{Float64}), one(Quat{Float64}))
+        lineartraj = convert(BasicFootTrajectory{T}, SVector(0.0, 0.0, 0.0), Inf)
         trajectory = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
         weight = Diagonal(vcat(fill(10.0, 3), fill(10.0, 3)))
         bodyid => SE3PDController(BodyID(root_body(mechanism)), BodyID(body), trajectory, weight, gains)
@@ -34,6 +34,8 @@ end
 
 function set_pose_plan!(statemachine::CoMTrackingStateMachine, bodyid::BodyID, plan::PosePlan)
     statemachine.pose_plans[bodyid] = plan
+    end_effector_controller = statemachine.end_effector_controllers[bodyid]
+    init_support!(end_effector_controller; t0=0.0, tf=next_move_start_time(plan))
     return nothing
 end
 
