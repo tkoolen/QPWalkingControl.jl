@@ -2,6 +2,7 @@ module FootTrajectoryTest
 
 using Test
 using StaticArrays
+using ForwardDiff
 import QPWalkingControl
 using QPWalkingControl: BasicFootTrajectory
 
@@ -22,8 +23,18 @@ using QPWalkingControl: BasicFootTrajectory
     @test any(z -> z >= max(p0[3], pf[3]) + Δzmid, zs)
     @test all(z -> z >= min(p0[3], pf[3]), zs)
 
-    allocs = @allocated BasicFootTrajectory(t0, tf, p0, Δzmid, pf, zdf)
+    allocs = let t0 = t0, tf = tf, p0 = p0, Δzmid = Δzmid, pf = pf, zdf = zdf
+        @allocated BasicFootTrajectory(t0, tf, p0, Δzmid, pf, zdf)
+    end
     @test allocs == 0
+
+    for t in range(t0, tf; length=100)
+        p, pd, pdd = traj(t, Val(2))
+        pd_fd = ForwardDiff.derivative(traj, t)
+        pdd_fd = ForwardDiff.derivative(t -> ForwardDiff.derivative(traj, t), t)
+        @test pd ≈ pd_fd atol=1e-10
+        @test pdd ≈ pdd_fd atol=1e-10
+    end
 end
 
 end

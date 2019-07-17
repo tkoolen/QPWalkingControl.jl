@@ -57,10 +57,10 @@ function (traj::BasicFootTrajectory)(t::Number, ::Val{2})
     sdd = derivative(derivative(traj.s))(t)
     Δx = traj.Δx(s)
     Δxd = derivative(traj.Δx)(s) * sd
-    Δxdd = derivative(traj.Δx)(s) * sdd + derivative(derivative(traj.Δx))(s) * sd
+    Δxdd = derivative(traj.Δx)(s) * sdd + derivative(derivative(traj.Δx))(s) * sd^2
     Δz = traj.Δz(s)
     Δzd = derivative(traj.Δz)(s) * sd
-    Δzdd = derivative(traj.Δz)(s) * sdd + derivative(derivative(traj.Δz))(s) * sd
+    Δzdd = derivative(traj.Δz)(s) * sdd + derivative(derivative(traj.Δz))(s) * sd^2
     p = traj.p0 + SVector(Δx * traj.xaxis[1], Δx * traj.xaxis[2], Δz)
     pd = SVector(Δxd * traj.xaxis[1], Δxd * traj.xaxis[2], Δzd)
     pdd = SVector(Δxdd * traj.xaxis[1], Δxdd * traj.xaxis[2], Δzdd)
