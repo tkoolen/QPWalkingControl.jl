@@ -70,9 +70,15 @@ function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
                     body_to_sole = inv(frame_definition(findbody(state.mechanism, bodyid), posef.from)) # TODO: inefficient
                     posef = posef * body_to_sole
                     println(findbody(state.mechanism, bodyid), " entering swing at $t. Goal: $posef")
-                    init_swing!(end_effector_controller, pose0, posef; t0=t0, tf=t0 + duration, zdf=-0.3, Δzmid=0.15)
+                    init_swing!(end_effector_controller, pose0, posef; t0=t0, tf=t0 + duration, zdf=0.0, Δzmid=0.15)
                 else
                     # coming into contact
+                    let
+                        Href, _, _ = end_effector_controller.trajectory[](t, Val(2))
+                        H = relative_transform(state, Href.from, Href.to)
+                        Herr = inv(Href) * H
+                        println(findbody(state.mechanism, bodyid), " tracking error at end of step: ", Herr)
+                    end
                     enable_contacts!(statemachine, bodyid)
                     println(findbody(state.mechanism, bodyid), " entering support at $t.")
                     init_support!(end_effector_controller; t0=t, tf=next_move_start_time(pose_plan))
