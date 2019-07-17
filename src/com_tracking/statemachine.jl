@@ -35,7 +35,8 @@ end
 function set_pose_plan!(statemachine::CoMTrackingStateMachine, bodyid::BodyID, plan::PosePlan)
     statemachine.pose_plans[bodyid] = plan
     end_effector_controller = statemachine.end_effector_controllers[bodyid]
-    init_support!(end_effector_controller; t0=0.0, tf=next_move_start_time(plan))
+    tf = isempty(plan) ? Inf : next_move_start_time(plan)
+    init_support!(end_effector_controller; t0=0.0, tf=tf)
     return nothing
 end
 
