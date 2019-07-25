@@ -54,6 +54,19 @@ function disable_contacts!(statemachine::CoMTrackingStateMachine, bodyid::BodyID
     end
 end
 
+# TODO: move somewhere else
+function tracking_error(end_effector_controller::SE3PDController, t, state::MechanismState)
+    Href, _, _ = end_effector_controller.trajectory[](t, Val(2))
+    H = relative_transform(state, Href.from, Href.to)
+    Herr = inv(Href) * H
+end
+
+function print_tracking_error(end_effector_controller::SE3PDController, t, state::MechanismState)
+    Herr = tracking_error(end_effector_controller, t, state)
+    Rerr, perr = rotation(Herr), translation(Herr)
+    print(rotation_angle(Rerr), " rad, ", norm(perr), " m.")
+end
+
 function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
     end_effector_controllers = statemachine.end_effector_controllers
     pose_plans = statemachine.pose_plans
@@ -75,13 +88,9 @@ function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
                 else
                     # coming into contact
                     let
-                        Href, _, _ = end_effector_controller.trajectory[](t, Val(2))
-                        H = relative_transform(state, Href.from, Href.to)
-                        Herr = inv(Href) * H
-                        Rerr = rotation(Herr)
-                        perr = translation(Herr)
-                        println(findbody(state.mechanism, bodyid), " entering support at $t.")
-                        println(findbody(state.mechanism, bodyid), " tracking error at end of step: ", rotation_angle(Rerr), " rad, ", norm(perr), " m.")
+                        print(findbody(state.mechanism, bodyid), " entering support at $t. Tracking error at end of step: ")
+                        print_tracking_error(end_effector_controller, t, state)
+                        println()
                     end
                     enable_contacts!(statemachine, bodyid)
                     init_support!(end_effector_controller; t0=t, tf=next_move_start_time(pose_plan))
@@ -89,7 +98,9 @@ function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
             else
                 # entering final contact phase
                 enable_contacts!(statemachine, bodyid)
-                println(findbody(state.mechanism, bodyid), " entering final support at $t.")
+                print(findbody(state.mechanism, bodyid), " entering final support at $t. Tracking error at end of step: ")
+                print_tracking_error(end_effector_controller, t, state)
+                println()
                 init_support!(end_effector_controller; t0=t, tf=Inf)
             end
         end
