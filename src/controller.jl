@@ -21,7 +21,7 @@ function HumanoidQPController(
         nominalstate::MechanismState,
         statemachine,
         end_effector_controllers::Vector{<:SE3PDController},
-        linear_momentum_controller,
+        linear_momentum_controller;
         joint_regularization::Float64 = 0.05,
         linear_momentum_weight::Float64 = 1.0,
         pelvisgains::PDGains = default_pelvis_gains(),

@@ -21,7 +21,7 @@ function CoMTrackingStateMachine(
         angulartraj = interpolated_orientation_trajectory(0.0, Inf, one(Quat{Float64}), one(Quat{Float64}))
         lineartraj = convert(BasicFootTrajectory{T}, SVector(0.0, 0.0, 0.0), Inf)
         trajectory = SE3Trajectory(bodyframe, baseframe, angulartraj, lineartraj)
-        weight = Diagonal(vcat(fill(10.0, 3), fill(10.0, 3)))
+        weight = Diagonal(vcat(fill(100.0, 3), fill(100.0, 3)))
         bodyid => SE3PDController(BodyID(root_body(mechanism)), BodyID(body), trajectory, weight, gains)
     end |> Dict
     pose_plans = Dict(bodyid => PosePlan{Float64}() for bodyid in bodyids)
@@ -70,18 +70,20 @@ function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
                     t0, duration, posef = popfirst!(pose_plan)
                     body_to_sole = inv(frame_definition(findbody(state.mechanism, bodyid), posef.from)) # TODO: inefficient
                     posef = posef * body_to_sole
-                    println(findbody(state.mechanism, bodyid), " entering swing at $t. Goal: $posef")
-                    init_swing!(end_effector_controller, pose0, posef; t0=t0, tf=t0 + duration, zdf=-0.1, Δzmid=0.15)
+                    println(findbody(state.mechanism, bodyid), " entering swing at $t")
+                    init_swing!(end_effector_controller, pose0, posef; t0=t0, tf=t0 + duration, zdf=-0.01, Δzmid=0.2)
                 else
                     # coming into contact
                     let
                         Href, _, _ = end_effector_controller.trajectory[](t, Val(2))
                         H = relative_transform(state, Href.from, Href.to)
                         Herr = inv(Href) * H
-                        println(findbody(state.mechanism, bodyid), " tracking error at end of step: ", Herr)
+                        Rerr = rotation(Herr)
+                        perr = translation(Herr)
+                        println(findbody(state.mechanism, bodyid), " entering support at $t.")
+                        println(findbody(state.mechanism, bodyid), " tracking error at end of step: ", rotation_angle(Rerr), " rad, ", norm(perr), " m.")
                     end
                     enable_contacts!(statemachine, bodyid)
-                    println(findbody(state.mechanism, bodyid), " entering support at $t.")
                     init_support!(end_effector_controller; t0=t, tf=next_move_start_time(pose_plan))
                 end
             else
