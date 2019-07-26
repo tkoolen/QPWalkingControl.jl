@@ -84,7 +84,7 @@ function (statemachine::CoMTrackingStateMachine)(t, state::MechanismState)
                     body_to_sole = inv(frame_definition(findbody(state.mechanism, bodyid), posef.from)) # TODO: inefficient
                     posef = posef * body_to_sole
                     println(findbody(state.mechanism, bodyid), " entering swing at $t")
-                    init_swing!(end_effector_controller, pose0, posef; t0=t0, tf=t0 + duration, zdf=-0.01, Δzmid=0.2)
+                    init_swing!(end_effector_controller, pose0, posef; t0=t0, tf=t0 + duration, zdf=-0.01, Δzmid=0.15)
                 else
                     # coming into contact
                     let
